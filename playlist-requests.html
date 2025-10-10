@@ -1,0 +1,912 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1976d2">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <title>طلب مادة - حمدان</title>
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Professional Select Lists */
+        .form-select {
+            background-color: #ffffff;
+            color: #333;
+            border: 2px solid #464646;
+            border-radius: 12px;
+            padding: 12px 16px;
+            font-size: 16px;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+
+        .form-select:focus {
+            background-color: #ffffff;
+            color: #333;
+            border-color: #007bff;
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.15);
+            outline: none;
+        }
+
+        .form-select:disabled {
+            background-color: #f8f9fa;
+            color: #6c757d;
+            border-color: #dee2e6;
+        }
+
+        .form-select option {
+            background-color: #ffffff;
+            color: #333;
+            padding: 8px;
+        }
+
+        /* Professional Form Container */
+        .selection-form {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 24px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .form-label {
+            font-weight: 600;
+            color: #495057;
+            margin-bottom: 8px;
+            font-size: 14px;
+        }
+
+        /* Professional Playlist Cards */
+        .playlist-card {
+            background: #ffffff;
+            border: 1px solid #e9ecef;
+            border-radius: 12px;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+        }
+
+        .playlist-card:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+            border-color: #007bff;
+        }
+
+        .playlist-badge {
+            width: 65px;
+            height: 65px;
+            object-fit: cover;
+            border-radius: 8px;
+            border: 2px solid #e9ecef;
+            flex-shrink: 0;
+            transition: all 0.3s ease;
+        }
+
+        .playlist-card:hover .playlist-badge {
+            border-color: #007bff;
+            transform: scale(1.05);
+        }
+
+        .playlist-card h6 {
+            color: #212529;
+            font-weight: 600;
+            margin-bottom: 4px;
+        }
+
+        .playlist-card small {
+            color: #6c757d;
+            font-size: 13px;
+        }
+
+        /* Professional Request Button */
+        .btn-request {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            border: none;
+            border-radius: 8px;
+            padding: 10px 20px;
+            font-weight: 600;
+            font-size: 14px;
+            color: white;
+            transition: all 0.3s ease;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-request:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 15px rgba(40, 167, 69, 0.4);
+            background: linear-gradient(135deg, #218838, #1ea085);
+        }
+
+        .btn-request:disabled {
+            background: #6c757d;
+            transform: none;
+            box-shadow: none;
+        }
+
+        /* Request Status Button Styles */
+        .btn-request.requested {
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+            color: white;
+            cursor: not-allowed;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+        }
+
+        .btn-request.requested:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(108, 117, 125, 0.3);
+            background: linear-gradient(135deg, #6c757d, #5a6268);
+        }
+
+        .btn-request.rejected {
+            background: linear-gradient(135deg, #dc3545, #c82333);
+            color: white;
+            cursor: not-allowed;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+        }
+
+        .btn-request.rejected:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(220, 53, 69, 0.3);
+            background: linear-gradient(135deg, #dc3545, #c82333);
+        }
+
+        .btn-request.approved {
+            background: linear-gradient(135deg, #28a745, #20c997);
+            color: white;
+            cursor: not-allowed;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+        }
+
+        .btn-request.approved:hover {
+            transform: none;
+            box-shadow: 0 2px 8px rgba(40, 167, 69, 0.3);
+            background: linear-gradient(135deg, #28a745, #20c997);
+        }
+
+        /* Playlist Container */
+        .playlists-container {
+            background: #ffffff;
+            border-radius: 16px;
+            box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+            border: 1px solid #f0f0f0;
+        }
+
+        .playlists-header {
+            background: linear-gradient(135deg, #f8f9fa, #e9ecef);
+            border-radius: 16px 16px 0 0;
+            padding: 20px 24px;
+            border-bottom: 1px solid #e9ecef;
+        }
+
+        .playlists-body {
+            padding: 24px;
+        }
+
+        /* Empty State */
+        .empty-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .empty-state i {
+            font-size: 3rem;
+            margin-bottom: 16px;
+            opacity: 0.5;
+        }
+
+        .empty-state h5 {
+            color: #495057;
+            font-weight: 600;
+            margin-bottom: 8px;
+        }
+
+        /* Loading State */
+        .loading-state {
+            text-align: center;
+            padding: 40px 20px;
+            color: #6c757d;
+        }
+
+        .loading-state .spinner-border {
+            width: 2rem;
+            height: 2rem;
+            border-width: 3px;
+        }
+
+        /* Layout Improvements */
+        .container-fluid {
+            padding-left: 15px;
+            padding-right: 15px;
+        }
+
+        .row {
+            margin: 0;
+            min-height: calc(100vh - 200px);
+        }
+
+        .col-md-4, .col-md-8 {
+            padding: 0 10px;
+        }
+
+        /* Ensure no horizontal scroll */
+        body {
+            overflow-x: hidden;
+        }
+
+        /* Tablet and iPad responsive adjustments */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .col-md-4 {
+                flex: 0 0 35%;
+                max-width: 35%;
+            }
+            
+            .col-md-8 {
+                flex: 0 0 65%;
+                max-width: 65%;
+            }
+            
+            .selection-form {
+                padding: 20px;
+            }
+            
+            .playlists-body {
+                padding: 20px;
+            }
+            
+            .form-select {
+                padding: 10px 14px;
+                font-size: 15px;
+            }
+        }
+
+        /* iPad Portrait */
+        @media (max-width: 834px) and (min-width: 768px) {
+            .container-fluid {
+                padding-left: 10px;
+                padding-right: 10px;
+            }
+            
+            .col-md-4, .col-md-8 {
+                padding: 0 8px;
+            }
+            
+            .selection-form {
+                padding: 16px;
+            }
+            
+            .playlists-body {
+                padding: 16px;
+                max-height: calc(100vh - 180px);
+            }
+            
+            .form-label {
+                font-size: 13px;
+            }
+            
+            .form-select {
+                padding: 8px 12px;
+                font-size: 14px;
+            }
+        }
+
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .col-md-4, .col-md-8 {
+                margin-bottom: 20px;
+                padding: 0 15px;
+            }
+            
+            .row {
+                min-height: auto;
+            }
+            
+            .selection-form {
+                margin-bottom: 20px;
+            }
+            
+            .playlists-body {
+                max-height: calc(100vh - 300px);
+            }
+        }
+
+        /* Small tablets and large phones */
+        @media (max-width: 600px) {
+            .container-fluid {
+                padding-left: 5px;
+                padding-right: 5px;
+            }
+            
+            .col-md-4, .col-md-8 {
+                padding: 0 5px;
+            }
+            
+            .selection-form, .playlists-body {
+                padding: 12px;
+            }
+            
+            .form-select {
+                padding: 6px 10px;
+                font-size: 13px;
+            }
+            
+            .form-label {
+                font-size: 12px;
+            }
+
+            .playlist-badge {
+                width: 55px;
+                height: 55px;
+            }
+
+            /* Mobile playlist card adjustments */
+            .playlist-card {
+                padding: 12px !important;
+            }
+
+            .playlist-card h6 {
+                font-size: 14px;
+                margin-bottom: 2px;
+            }
+
+            .playlist-card small {
+                font-size: 11px;
+                line-height: 1.2;
+                display: -webkit-box;
+                -webkit-line-clamp: 2;
+                line-clamp: 2;
+                -webkit-box-orient: vertical;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                max-height: 2.4em;
+            }
+
+            .playlist-card .btn {
+                font-size: 10px;
+                padding: 5px 8px;
+                min-width: 75px;
+                white-space: nowrap;
+            }
+
+            .playlist-card .d-flex.align-items-center {
+                font-size: 10px;
+            }
+
+            .playlist-card .d-flex.align-items-center i {
+                font-size: 9px;
+            }
+        }
+
+        /* Extra small phones */
+        @media (max-width: 480px) {
+            .playlist-card {
+                padding: 8px !important;
+            }
+
+            .playlist-badge {
+                width: 45px;
+                height: 45px;
+            }
+
+            .playlist-card h6 {
+                font-size: 13px;
+            }
+
+            .playlist-card small {
+                font-size: 10px;
+                -webkit-line-clamp: 1;
+                line-clamp: 1;
+                max-height: 1.2em;
+            }
+
+            .playlist-card .btn {
+                font-size: 9px;
+                padding: 4px 6px;
+                min-width: 65px;
+            }
+
+            .playlist-card .d-flex.align-items-center {
+                font-size: 9px;
+            }
+
+            .playlist-card .d-flex.align-items-center i {
+                font-size: 8px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <div class="d-flex justify-content-between w-100 align-items-center">
+                <!-- Notifications Icon -->
+                <a href="notifications.html" class="text-white position-relative">
+                    <i class="fas fa-bell fa-lg"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                        .
+                    </span>
+                </a>
+
+                <div class="d-flex align-items-center gap-2">
+                    <button id="installBtnNav" class="btn btn-sm btn-outline-light d-none" title="تثبيت التطبيق">
+                        <i class="fas fa-download"></i> تثبيت
+                    </button>
+                    <!-- Phone Icon -->
+                    <a href="http://t.me/hamdan2S" class="text-white">
+                        <i class="fas fa-phone fa-lg"></i>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+
+        <!-- Main Content -->
+        <div class="container-fluid mt-4">
+            <div class="row">
+                <!-- Left Side - Selection Form -->
+                <div class="col-lg-4 col-md-5 col-sm-12">
+                    <div class="selection-form h-100">
+                        <!-- Header -->
+                        <div class="text-center mb-4">
+                            <h4><i class="fas fa-plus-circle text-primary"></i> طلب مادة جديدة</h4>
+                            <p class="text-muted small">اختر الجامعة والكلية</p>
+                        </div>
+
+                        <!-- Selection Form -->
+                        <div class="mb-3">
+                            <label for="universitySelect" class="form-label">
+                                <i class="fas fa-university text-primary me-2"></i>الجامعة
+                            </label>
+                            <select class="form-select" id="universitySelect" onchange="loadColleges()">
+                                <option value="">اختر الجامعة...</option>
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="collegeSelect" class="form-label">
+                                <i class="fas fa-graduation-cap text-success me-2"></i>الكلية
+                            </label>
+                            <select class="form-select" id="collegeSelect" onchange="loadPlaylists()" disabled>
+                                <option value="">اختر الكلية...</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Right Side - Playlists Section -->
+                <div class="col-lg-8 col-md-7 col-sm-12">
+                    <div class="playlists-container h-100">
+                        <div class="playlists-header">
+                            <h5 class="mb-0">
+                                <i class="fas fa-list text-primary me-2"></i>المواد المتاحة
+                            </h5>
+                        </div>
+                        <div class="playlists-body" style="max-height: calc(100vh - 200px); overflow-y: auto;">
+                            <div id="playlistsList">
+                                <div class="empty-state">
+                                    <i class="fas fa-arrow-up"></i>
+                                    <h5>اختر الجامعة والكلية أولاً</h5>
+                                    <p>لعرض المواد المتاحة</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    <!-- Bottom Navigation -->
+    <nav class="navbar fixed-bottom navbar-light bg-white border-top">
+        <div class="container">
+            <div class="d-flex justify-content-around w-100">
+                <a href="dashboard.html" class="nav-link text-center">
+                    <i class="fas fa-home"></i>
+                    <div class="small">الرئيسية</div>
+                </a>
+                <a href="playlists.html" class="nav-link text-center">
+                    <i class="fas fa-list"></i>
+                    <div class="small">المواد</div>
+                </a>
+                <a href="notifications.html" class="nav-link text-center">
+                    <i class="fas fa-bell"></i>
+                    <div class="small">الإشعارات</div>
+                </a>
+                <a href="messages.html" class="nav-link text-center">
+                    <i class="fas fa-envelope"></i>
+                    <div class="small">الرسائل</div>
+                </a>
+                <a href="profile.html" class="nav-link text-center">
+                    <i class="fas fa-user"></i>
+                    <div class="small">الملف الشخصي</div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container position-fixed top-0 end-0 p-3"></div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Configuration
+        const API_BASE = 'https://api.hamdan.help/api';
+        //const API_BASE = 'http://localhost:3000/api';
+        const token = localStorage.getItem('token');
+
+        // Check authentication
+        if (!token) {
+            window.location.href = 'index.html';
+        }
+
+        // Global variables
+        let selectedUniversity = null;
+        let selectedCollege = null;
+
+        // Test function to check API endpoint
+        async function testStatusAPI() {
+            try {
+                console.log('Testing status API...');
+                const testResponse = await fetch(`${API_BASE}/playlist-requests/statuses`, {
+                    method: 'POST',
+                    headers: {
+                        'Authorization': `Bearer ${token}`,
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ playlistIds: ['test-id'] })
+                });
+                console.log('Test response status:', testResponse.status);
+                const testData = await testResponse.text();
+                console.log('Test response body:', testData);
+            } catch (error) {
+                console.error('Test API error:', error);
+            }
+        }
+
+        // Load data on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadUniversities();
+            // Test the status API
+            testStatusAPI();
+        });
+
+        // Load universities
+        async function loadUniversities() {
+            try {
+                const response = await fetch(`${API_BASE}/universities`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                const universitySelect = document.getElementById('universitySelect');
+                
+                if (data.success && data.data && data.data.universities) {
+                    universitySelect.innerHTML = '<option value="">اختر الجامعة...</option>';
+                    data.data.universities.forEach(university => {
+                        const option = document.createElement('option');
+                        option.value = university.id;
+                        option.textContent = university.name;
+                        universitySelect.appendChild(option);
+                    });
+                } else {
+                    universitySelect.innerHTML = '<option value="" disabled>لا توجد جامعات</option>';
+                }
+            } catch (error) {
+                console.error('Error loading universities:', error);
+                document.getElementById('universitySelect').innerHTML = '<option value="" disabled>خطأ في تحميل الجامعات</option>';
+            }
+        }
+
+        // Load colleges when university is selected
+        async function loadColleges() {
+            const universitySelect = document.getElementById('universitySelect');
+            const collegeSelect = document.getElementById('collegeSelect');
+            const playlistsList = document.getElementById('playlistsList');
+            
+            if (!universitySelect.value) {
+                collegeSelect.innerHTML = '<option value="">اختر الكلية...</option>';
+                collegeSelect.disabled = true;
+                playlistsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-arrow-up"></i>
+                        <h5>اختر الجامعة والكلية أولاً</h5>
+                        <p>للعرض المواد المتاحة</p>
+                    </div>
+                `;
+                return;
+            }
+
+            selectedUniversity = { id: universitySelect.value, name: universitySelect.options[universitySelect.selectedIndex].text };
+            collegeSelect.innerHTML = '<option value="">جاري التحميل...</option>';
+            collegeSelect.disabled = true;
+
+            try {
+                const response = await fetch(`${API_BASE}/colleges?universityId=${universitySelect.value}`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (data.success && data.data && data.data.colleges) {
+                    collegeSelect.innerHTML = '<option value="">اختر الكلية...</option>';
+                    if (data.data.colleges.length === 0) {
+                        collegeSelect.innerHTML += '<option value="" disabled>لا توجد كليات</option>';
+                    } else {
+                        data.data.colleges.forEach(college => {
+                            const option = document.createElement('option');
+                            option.value = college.id;
+                            option.textContent = college.name;
+                            collegeSelect.appendChild(option);
+                        });
+                        collegeSelect.disabled = false;
+                    }
+                } else {
+                    collegeSelect.innerHTML = '<option value="" disabled>خطأ في تحميل الكليات</option>';
+                }
+            } catch (error) {
+                console.error('Error loading colleges:', error);
+                collegeSelect.innerHTML = '<option value="" disabled>خطأ في تحميل الكليات</option>';
+            }
+        }
+
+        // Load playlists when college is selected
+        async function loadPlaylists() {
+            const collegeSelect = document.getElementById('collegeSelect');
+            const playlistsList = document.getElementById('playlistsList');
+            
+            if (!collegeSelect.value) {
+                playlistsList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-arrow-up"></i>
+                        <h5>اختر الكلية أولاً</h5>
+                        <p>للعرض المواد المتاحة</p>
+                    </div>
+                `;
+                return;
+            }
+
+            selectedCollege = { id: collegeSelect.value, name: collegeSelect.options[collegeSelect.selectedIndex].text };
+            playlistsList.innerHTML = `
+                <div class="loading-state">
+                    <div class="spinner-border text-primary" role="status">
+                        <span class="visually-hidden">جاري التحميل...</span>
+                    </div>
+                    <p>جاري تحميل المواد...</p>
+                </div>
+            `;
+
+            try {
+                const response = await fetch(`${API_BASE}/colleges/${collegeSelect.value}/playlists`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                    if (data.success && data.data && data.data.playlists) {
+                        if (data.data.playlists.length === 0) {
+                            playlistsList.innerHTML = `
+                                <div class="empty-state">
+                                    <i class="fas fa-list"></i>
+                                    <h5>لا توجد مواد متاحة</h5>
+                                    <p>هذه الكلية لا تحتوي على مواد مخصصة بعد</p>
+                                </div>
+                            `;
+                            return;
+                        }
+
+                    // Get playlist IDs for status checking
+                    const playlistIds = data.data.playlists.map(assignment => assignment.playlist._id);
+                    console.log('Raw playlist data:', data.data.playlists);
+                    
+                    // Fetch request statuses for these playlists
+                    let requestStatuses = {};
+                    console.log('Fetching request statuses for playlist IDs:', playlistIds);
+                    try {
+                        const statusResponse = await fetch(`${API_BASE}/playlist-requests/statuses`, {
+                            method: 'POST',
+                            headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({ playlistIds })
+                        });
+                        
+                        console.log('Status response status:', statusResponse.status);
+                        
+                        if (statusResponse.ok) {
+                            const statusData = await statusResponse.json();
+                            console.log('Status data received:', statusData);
+                            if (statusData.success) {
+                                requestStatuses = statusData.data.statuses;
+                                console.log('Request statuses:', requestStatuses);
+                            }
+                        } else {
+                            console.error('Status response not ok:', statusResponse.status, statusResponse.statusText);
+                            const errorText = await statusResponse.text();
+                            console.error('Error response body:', errorText);
+                        }
+                    } catch (statusError) {
+                        console.error('Error fetching request statuses:', statusError);
+                        // Continue without statuses if there's an error
+                    }
+
+                    playlistsList.innerHTML = '';
+                    data.data.playlists.forEach(assignment => {
+                        const playlist = assignment.playlist;
+                        const playlistId = playlist._id;
+                        const requestStatus = requestStatuses[playlistId];
+                        
+                        console.log(`Playlist ${playlist.title} (${playlistId}):`, requestStatus);
+                        
+                        // Determine button state based on request status
+                        let buttonClass = 'btn-request';
+                        let buttonText = '<i class="fas fa-plus-circle"></i> طلب ';
+                        let buttonOnclick = `requestPlaylist('${playlistId}', '${playlist.title}')`;
+                        
+                        if (requestStatus) {
+                            console.log(`Found request status for ${playlist.title}:`, requestStatus.status);
+                            switch (requestStatus.status) {
+                                case 'pending':
+                                    buttonClass += ' requested';
+                                    buttonText = '<i class="fas fa-clock"></i> معلق';
+                                    buttonOnclick = '';
+                                    break;
+                                case 'approved':
+                                    buttonClass += ' approved';
+                                    buttonText = '<i class="fas fa-check"></i> مقبول';
+                                    buttonOnclick = '';
+                                    break;
+                                case 'rejected':
+                                    // Allow student to request again if rejected
+                                    buttonClass = 'btn-request';
+                                    buttonText = '<i class="fas fa-redo"></i> طلب  ';
+                                    buttonOnclick = `requestPlaylist('${playlistId}', '${playlist.title}')`;
+                                    break;
+                            }
+                        } else {
+                            console.log(`No request status found for ${playlist.title}`);
+                        }
+                        
+                        console.log(`Final button state for ${playlist.title}:`, { buttonClass, buttonText, buttonOnclick });
+                        
+                        // Format the image URL - fix duplicate domain issue
+                        let imageUrl = 'images/course.jpg'; // Default fallback
+                        
+                        if (playlist.image) {
+                            // Fix duplicate domain issue if it exists
+                            if (playlist.image.includes('https://api.hamdan.helphttps://api.hamdan.help')) {
+                                imageUrl = playlist.image.replace('https://api.hamdan.helphttps://api.hamdan.help', 'https://api.hamdan.help');
+                            } else {
+                                imageUrl = playlist.image;
+                            }
+                        }
+                        
+                        const playlistCard = document.createElement('div');
+                        playlistCard.className = 'playlist-card p-3 mb-3';
+                        playlistCard.innerHTML = `
+                            <div class="d-flex justify-content-between align-items-center">
+                                <div class="d-flex align-items-center">
+                                    <img src="${imageUrl}"
+                                         class="playlist-badge me-3"
+                                         alt="${playlist.title}"
+                                         onerror="this.src='images/course.jpg'">
+                                    <div>
+                                        <h6 class="mb-1">${playlist.title}</h6>
+                                        <small class="text-muted">${playlist.description || 'لا يوجد وصف'}</small>
+                                        <div class="d-flex align-items-center mt-1">
+                                            <i class="fas fa-video me-1 text-muted"></i>
+                                            <small class="text-muted">${playlist.videoLength || '00:00'}</small>
+                                            <i class="fas fa-users ms-3 me-1 text-muted"></i>
+                                            <small class="text-muted">${playlist.studentCount || 0}</small>
+                                        </div>
+                                    </div>
+                                </div>
+                                <button class="btn ${buttonClass} btn-sm" ${buttonOnclick ? `onclick="${buttonOnclick}"` : 'disabled'}>
+                                    ${buttonText}
+                                </button>
+                            </div>
+                        `;
+                        playlistsList.appendChild(playlistCard);
+                    });
+                    } else {
+                        playlistsList.innerHTML = `
+                            <div class="empty-state">
+                                <i class="fas fa-exclamation-triangle text-warning"></i>
+                                <h5>خطأ في تحميل المواد</h5>
+                                <p>لا يمكن تحميل المواد</p>
+                            </div>
+                        `;
+                    }
+                } catch (error) {
+                    console.error('Error loading playlists:', error);
+                    playlistsList.innerHTML = `
+                        <div class="empty-state">
+                            <i class="fas fa-exclamation-triangle text-danger"></i>
+                            <h5>خطأ في تحميل المواد</h5>
+                            <p>لا يمكن تحميل المواد</p>
+                        </div>
+                    `;
+                }
+        }
+
+        // Request playlist access
+        async function requestPlaylist(playlistId, playlistTitle) {
+            if (!selectedUniversity || !selectedCollege) {
+                showToast('يرجى اختيار الجامعة والكلية أولاً', 'warning');
+                return;
+            }
+
+            // Check if this is a re-request (button text contains "مرة أخرى")
+            const isReRequest = event && event.target && event.target.innerHTML.includes('مرة أخرى');
+            const confirmMessage = isReRequest ? 
+                `إعادة طلب الانضمام إلى "${playlistTitle}"؟` : 
+                `طلب الانضمام إلى "${playlistTitle}"؟`;
+            
+            if (!confirm(confirmMessage)) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_BASE}/playlist-requests`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        playlistId,
+                        universityId: selectedUniversity.id,
+                        collegeId: selectedCollege.id
+                    })
+                });
+
+                const data = await response.json();
+
+                if (data.success) {
+                    const successMessage = isReRequest ? 
+                        `تم إعادة إرسال طلب الانضمام إلى "${playlistTitle}" بنجاح!` : 
+                        `تم إرسال طلب الانضمام إلى "${playlistTitle}" بنجاح!`;
+                    showToast(successMessage, 'success');
+                    // Refresh the playlist list to show updated button states
+                    loadPlaylists();
+                } else {
+                    showToast(data.message || 'خطأ في إرسال الطلب', 'danger');
+                }
+            } catch (error) {
+                console.error('Error requesting playlist:', error);
+                showToast('خطأ في إرسال الطلب', 'danger');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toastId = `toast-${Date.now()}`;
+            const toastEl = document.createElement('div');
+
+            toastEl.className = `toast align-items-center text-white bg-${type} border-0 show`;
+            toastEl.id = toastId;
+            toastEl.setAttribute('role', 'alert');
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+            toastContainer.appendChild(toastEl);
+
+            // Auto remove after 5 seconds
+            setTimeout(() => {
+                const toast = document.getElementById(toastId);
+                if (toast) {
+                    toast.remove();
+                }
+            }, 5000);
+        }
+    </script>
+</body>
+</html>

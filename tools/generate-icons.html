@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Generate PWA Icons</title>
+  <style>
+    body { font-family: system-ui, -apple-system, Segoe UI, Roboto, Arial, sans-serif; margin: 24px; }
+    .card { max-width: 640px; margin: 0 auto; padding: 20px; border-radius: 12px; border: 1px solid #e6e6e6; box-shadow: 0 6px 20px rgba(0,0,0,0.06); }
+    .row { display: flex; gap: 12px; align-items: center; }
+    button { background: #1976d2; color: #fff; border: 0; padding: 10px 16px; border-radius: 8px; cursor: pointer; }
+    button.secondary { background: #555; }
+    img { width: 72px; height: 72px; object-fit: contain; background: #fff; border: 1px solid #eee; border-radius: 6px; }
+    .muted { color: #666; }
+    input[type="text"] { width: 100%; padding: 8px 10px; border: 1px solid #ddd; border-radius: 8px; }
+    .sizes { display: flex; gap: 8px; flex-wrap: wrap; }
+    .badge { background: #eee; padding: 6px 10px; border-radius: 999px; }
+  </style>
+</head>
+<body>
+  <div class="card">
+    <h2>Generate PWA Icons</h2>
+    <p class="muted">This tool loads <code>../images/logo.png</code> and generates exact 192x192 and 512x512 PNG icons for your PWA.</p>
+
+    <div class="row" style="margin: 12px 0;">
+      <img id="preview" alt="preview" src="../images/logo.png" onerror="this.style.opacity=0.3" />
+      <div style="flex:1">
+        <div class="sizes">
+          <span class="badge">192x192</span>
+          <span class="badge">512x512</span>
+        </div>
+        <div class="muted" style="margin-top:6px;">Make sure <code>../images/logo.png</code> exists.</div>
+      </div>
+    </div>
+
+    <div class="row" style="justify-content: flex-end; margin-top: 12px;">
+      <button id="generate">Generate & Download</button>
+    </div>
+
+    <p class="muted" style="margin-top: 16px;">After download, move the files into <code>hamdan-web/images/</code> and name them <code>logo-192.png</code> and <code>logo-512.png</code>. I can then update your manifest to reference them.</p>
+  </div>
+
+  <script>
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.href = url; a.download = filename; a.click();
+      URL.revokeObjectURL(url);
+    }
+
+    async function canvasFromImage(src, size) {
+      const img = new Image();
+      img.crossOrigin = 'anonymous';
+      img.decoding = 'async';
+      img.src = src;
+      await img.decode().catch(()=>{});
+      const canvas = document.createElement('canvas');
+      canvas.width = size; canvas.height = size;
+      const ctx = canvas.getContext('2d');
+      // Fill white background to avoid transparent edges
+      ctx.fillStyle = '#ffffff';
+      ctx.fillRect(0,0,size,size);
+
+      // Draw the image centered and contained
+      const ratio = Math.min(size / img.width, size / img.height);
+      const w = Math.round(img.width * ratio);
+      const h = Math.round(img.height * ratio);
+      const x = Math.round((size - w) / 2);
+      const y = Math.round((size - h) / 2);
+      ctx.imageSmoothingEnabled = true;
+      ctx.imageSmoothingQuality = 'high';
+      ctx.drawImage(img, x, y, w, h);
+
+      return new Promise((resolve) => canvas.toBlob(resolve, 'image/png'));
+    }
+
+    document.getElementById('generate').addEventListener('click', async () => {
+      const src = document.getElementById('preview').src;
+      try {
+        const b192 = await canvasFromImage(src, 192);
+        const b512 = await canvasFromImage(src, 512);
+        if (b192) downloadBlob(b192, 'logo-192.png');
+        if (b512) downloadBlob(b512, 'logo-512.png');
+        alert('Downloads started. Move files into hamdan-web/images/ and tell me to update manifest.');
+      } catch (e) {
+        alert('Failed to generate icons. Ensure images/logo.png exists and is accessible.');
+      }
+    });
+  </script>
+</body>
+</html>

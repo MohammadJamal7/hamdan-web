@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1976d2">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <title>الرسائل - حمدان</title>
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        /* Chat Container */
+        .chat-container {
+            height: calc(100vh - 200px);
+            display: flex;
+            flex-direction: column;
+            background: #f8f9fa;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.1);
+            position: relative;
+        }
+        
+        /* Mobile responsive adjustments */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: calc(100vh - 140px); /* Added more space for padding */
+                border-radius: 0;
+                margin: 0;
+                position: fixed;
+                top: 0;
+                left: 0;
+                right: 0;
+                bottom: 80px; /* Added padding above bottom navigation */
+                z-index: 999;
+            }
+            
+            .container {
+                padding: 0;
+                margin: 0;
+            }
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .chat-avatar {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(255,255,255,0.2);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+        }
+
+        .chat-info h5 {
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .chat-info small {
+            opacity: 0.8;
+        }
+
+        /* Messages Area */
+        .messages-area {
+            flex: 1;
+            overflow-y: auto;
+            padding: 20px;
+            background: #f8f9fa;
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: stretch;
+        }
+        
+        /* Mobile messages area adjustments */
+        @media (max-width: 768px) {
+            .messages-area {
+                padding: 15px;
+                padding-bottom: 100px; /* Space for fixed input area */
+            }
+        }
+
+        /* Message Bubbles */
+        .message-bubble {
+            max-width: 70%;
+            padding: 12px 16px;
+            border-radius: 18px;
+            position: relative;
+            word-wrap: break-word;
+            animation: slideIn 0.3s ease-out;
+            margin-bottom: 5px;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        /* Sent Messages (Right) */
+        .message-sent {
+            align-self: flex-end !important;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%) !important;
+            color: white !important;
+            border-bottom-right-radius: 4px;
+            margin-left: auto !important;
+            margin-right: 0 !important;
+            border: 3px solid #28a745 !important; /* Debug border */
+            float: right !important;
+            clear: both !important;
+        }
+
+        .message-sent::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            right: -8px;
+            width: 0;
+            height: 0;
+            border: 8px solid transparent;
+            border-left-color: #667eea;
+            border-bottom: none;
+        }
+
+        /* Received Messages (Left) */
+        .message-received {
+            align-self: flex-start !important;
+            background: white !important;
+            color: #333 !important;
+            border: 3px solid #dc3545 !important; /* Debug border */
+            border-bottom-left-radius: 4px;
+            margin-right: auto !important;
+            margin-left: 0 !important;
+            float: left !important;
+            clear: both !important;
+        }
+
+        .message-received::before {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: -8px;
+            width: 0;
+            height: 0;
+            border: 8px solid transparent;
+            border-right-color: white;
+            border-bottom: none;
+        }
+
+        /* Message Content */
+        .message-text {
+            margin: 0;
+            line-height: 1.4;
+        }
+
+        .message-time {
+            font-size: 0.75rem;
+            opacity: 0.7;
+            margin-top: 4px;
+            text-align: right;
+            display: flex;
+            align-items: center;
+            justify-content: flex-end;
+            gap: 4px;
+        }
+        
+
+        .message-received .message-time {
+            text-align: left;
+        }
+
+
+        /* Input Area */
+        .input-area {
+            background: white;
+            padding: 20px;
+            border-top: 1px solid #e9ecef;
+            display: flex;
+            gap: 10px;
+            align-items: flex-end;
+            position: sticky;
+            bottom: 0;
+            z-index: 1000;
+        }
+        
+        /* Mobile input area adjustments */
+        @media (max-width: 768px) {
+            .input-area {
+                position: fixed;
+                bottom: 80px; /* Added padding above bottom navigation */
+                left: 0;
+                right: 0;
+                padding: 15px;
+                border-radius: 0;
+                box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+                backdrop-filter: blur(10px);
+                background: rgba(255, 255, 255, 0.95);
+            }
+            
+            .message-input {
+                font-size: 16px; /* Prevent zoom on iOS */
+                border-radius: 20px;
+                padding: 12px 16px;
+            }
+            
+            .send-button {
+                width: 45px;
+                height: 45px;
+                border-radius: 50%;
+            }
+        }
+
+        .message-input {
+            flex: 1;
+            border: 2px solid #e9ecef;
+            border-radius: 25px;
+            padding: 12px 20px;
+            font-size: 16px;
+            resize: none;
+            max-height: 120px;
+            transition: all 0.3s ease;
+        }
+
+        .message-input:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.1);
+        }
+
+        .send-button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            border: none;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            color: white;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .send-button:hover {
+            transform: scale(1.05);
+            box-shadow: 0 4px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        .send-button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        /* Empty State */
+        .empty-chat {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+            color: #6c757d;
+            text-align: center;
+        }
+
+        .empty-chat i {
+            font-size: 4rem;
+            margin-bottom: 20px;
+            opacity: 0.5;
+        }
+
+        /* Priority Badges */
+        .priority-badge {
+            font-size: 0.7rem;
+            padding: 2px 6px;
+            border-radius: 10px;
+            font-weight: 500;
+            margin-left: 8px;
+        }
+
+        .priority-low { background: #28a745; color: white; }
+        .priority-normal { background: #17a2b8; color: white; }
+        .priority-high { background: #ffc107; color: #000; }
+        .priority-urgent { background: #dc3545; color: white; }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .chat-container {
+                height: calc(100vh - 150px);
+                border-radius: 0;
+            }
+            
+            .message-bubble {
+                max-width: 85%;
+            }
+        }
+
+        .toast-container {
+            position: fixed;
+            bottom: 1rem;
+            right: 1rem;
+            z-index: 9999;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+        <div class="container">
+            <div class="d-flex justify-content-between w-100 align-items-center">
+                <!-- Notifications Icon -->
+                <a href="notifications.html" class="text-white position-relative">
+                    <i class="fas fa-bell fa-lg"></i>
+                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger" id="unreadBadge" style="display: none;">
+                        0
+                    </span>
+                </a>
+
+                <!-- Phone Icon -->
+                <a href="http://t.me/hamdan2S" class="text-white">
+                    <i class="fas fa-phone fa-lg"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-4 mb-5 pb-5">
+        <!-- Chat Interface -->
+        <div class="chat-container">
+            <!-- Chat Header -->
+            <div class="chat-header">
+                <div class="chat-avatar">
+                    <i class="fas fa-user-shield"></i>
+                </div>
+                <div class="chat-info">
+                    <h5>د.حمدان - الإدارة</h5>
+                    
+                </div>
+            </div>
+
+            <!-- Messages Area -->
+            <div class="messages-area" id="messagesArea">
+                <div class="empty-chat" id="emptyChat">
+                    <i class="fas fa-comments"></i>
+                    <h5>مرحباً بك!</h5>
+                    <p>ابدأ محادثة مع الإدارة</p>
+                </div>
+            </div>
+
+            <!-- Input Area -->
+            <div class="input-area">
+                <textarea 
+                    class="message-input" 
+                    id="messageInput" 
+                    placeholder="اكتب رسالتك هنا..."
+                    rows="1"
+                ></textarea>
+                <button class="send-button" id="sendButton" onclick="sendMessage()">
+                    <i class="fas fa-paper-plane"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+
+    <!-- Bottom Navigation -->
+    <nav class="navbar fixed-bottom navbar-light bg-white border-top">
+        <div class="container">
+            <div class="d-flex justify-content-around w-100">
+                <a href="dashboard.html" class="nav-link text-center">
+                    <i class="fas fa-home"></i>
+                    <div class="small">الرئيسية</div>
+                </a>
+                <a href="playlists.html" class="nav-link text-center">
+                    <i class="fas fa-list"></i>
+                    <div class="small">المواد</div>
+                </a>
+                <a href="playlist-requests.html" class="nav-link text-center">
+                    <i class="fas fa-plus-circle"></i>
+                    <div class="small">طلب مادة</div>
+                </a>
+                <a href="notifications.html" class="nav-link text-center">
+                    <i class="fas fa-bell"></i>
+                    <div class="small">الإشعارات</div>
+                </a>
+                <a href="messages.html" class="nav-link active text-center">
+                    <i class="fas fa-envelope"></i>
+                    <div class="small">الرسائل</div>
+                </a>
+                <a href="profile.html" class="nav-link text-center">
+                    <i class="fas fa-user"></i>
+                    <div class="small">الملف الشخصي</div>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+
+    <!-- Toast Container -->
+    <div class="toast-container position-fixed bottom-0 end-0 p-3" id="toastContainer"></div>
+
+    <!-- Bootstrap JS Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <script>
+        const API_BASE = 'https://api.hamdan.help/api';
+       // const API_BASE = 'http://localhost:3000/api';
+        const token = localStorage.getItem('token');
+
+        // Check authentication
+        if (!token) {
+            window.location.href = 'login.html';
+        }
+
+        // Load messages on page load
+        document.addEventListener('DOMContentLoaded', function() {
+            loadMessages();
+            
+            // Add input event listeners
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            
+            // Auto-resize textarea
+            messageInput.addEventListener('input', function() {
+                this.style.height = 'auto';
+                this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+                
+                // Enable/disable send button
+                sendButton.disabled = !this.value.trim();
+            });
+            
+            // Send on Enter (but allow Shift+Enter for new lines)
+            messageInput.addEventListener('keydown', function(e) {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    sendMessage();
+                }
+            });
+        });
+
+        // Load messages
+        async function loadMessages() {
+            try {
+                const response = await fetch(`${API_BASE}/messages/student/conversation`, {
+                    headers: { 'Authorization': `Bearer ${token}` }
+                });
+                const data = await response.json();
+                
+                if (data.success) {
+                    console.log('Messages data:', data.data.messages);
+                    
+                    // If no messages, add some test messages for debugging
+                    if (data.data.messages.length === 0) {
+                        console.log('No messages found, adding test messages for debugging');
+                        const testMessages = [
+                            {
+                                id: 'test1',
+                                content: 'Hello, this is a test message from admin',
+                                sender: { name: 'د.حمدان', isAdmin: true },
+                                isFromStudent: false,
+                                createdAt: new Date(),
+                                createdAgo: '1 min ago'
+                            },
+                            {
+                                id: 'test2',
+                                content: 'Hello admin, this is from student',
+                                sender: { name: 'Student User', isAdmin: false },
+                                isFromStudent: true,
+                                createdAt: new Date(),
+                                createdAgo: '2 min ago'
+                            }
+                        ];
+                        displayMessages(testMessages);
+                    } else {
+                        displayMessages(data.data.messages);
+                    }
+                } else {
+                    showToast('خطأ في تحميل الرسائل', 'danger');
+                }
+            } catch (error) {
+                console.error('Error loading messages:', error);
+                showToast('خطأ في تحميل الرسائل', 'danger');
+            }
+        }
+
+        // Display messages in chat format
+        function displayMessages(messages) {
+            const messagesArea = document.getElementById('messagesArea');
+            const emptyChat = document.getElementById('emptyChat');
+            
+            if (messages.length === 0) {
+                emptyChat.style.display = 'flex';
+                return;
+            }
+
+            emptyChat.style.display = 'none';
+            messagesArea.innerHTML = '';
+            
+            // Messages are already sorted by creation time (oldest first) from the backend
+            messages.forEach(message => {
+                const messageBubble = document.createElement('div');
+                messageBubble.className = 'message-bubble';
+                
+                // Determine message direction - use multiple methods for reliability
+                let isFromStudent = message.isFromStudent;
+                
+                // Fallback: check if sender is admin
+                if (message.sender && message.sender.isAdmin !== undefined) {
+                    isFromStudent = !message.sender.isAdmin;
+                }
+                
+                // Fallback: check if sender name contains admin keywords
+                if (message.sender && message.sender.name) {
+                    const adminKeywords = ['admin', 'د.حمدان', 'حمدان', 'إدارة'];
+                    const isAdminName = adminKeywords.some(keyword => 
+                        message.sender.name.toLowerCase().includes(keyword.toLowerCase())
+                    );
+                    if (isAdminName) {
+                        isFromStudent = false;
+                    }
+                }
+                
+                if (isFromStudent) {
+                    messageBubble.classList.add('message-sent');
+                    console.log('Sent message:', message.content, 'Sender:', message.sender?.name);
+                } else {
+                    messageBubble.classList.add('message-received');
+                    console.log('Received message:', message.content, 'Sender:', message.sender?.name);
+                }
+                
+                
+                // Format time in Arabic
+                const timeString = formatArabicTime(new Date(message.createdAt));
+                
+                messageBubble.innerHTML = `
+                    <p class="message-text">${message.content}</p>
+                    <div class="message-time">${timeString}</div>
+                `;
+                
+                messagesArea.appendChild(messageBubble);
+            });
+            
+            // Scroll to bottom
+            scrollToBottom();
+        }
+
+
+
+
+        // Get priority text in Arabic
+        function getPriorityText(priority) {
+            const priorities = {
+                'low': 'منخفض',
+                'normal': 'عادي',
+                'high': 'عالي',
+                'urgent': 'عاجل'
+            };
+            return priorities[priority] || priority;
+        }
+
+        // Get type text in Arabic
+        function getTypeText(type) {
+            const types = {
+                'general': 'عام',
+                'announcement': 'إعلان',
+                'warning': 'تحذير',
+                'info': 'معلومات'
+            };
+            return types[type] || type;
+        }
+
+        // Send message function
+        async function sendMessage() {
+            const messageInput = document.getElementById('messageInput');
+            const sendButton = document.getElementById('sendButton');
+            const content = messageInput.value.trim();
+            
+            if (!content) {
+                return;
+            }
+            
+            // Disable input and button
+            messageInput.disabled = true;
+            sendButton.disabled = true;
+            
+            // Add message to chat immediately (optimistic update)
+            const tempId = `temp_${Date.now()}`;
+            addMessageToChat(content, 'sent', tempId);
+            
+            // Clear input
+            messageInput.value = '';
+            messageInput.style.height = 'auto';
+            
+            try {
+                const response = await fetch(`${API_BASE}/messages/send-to-admin`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify({
+                        subject: 'رسالة من الطالب',
+                        content,
+                        priority: 'normal',
+                        type: 'general'
+                    })
+                });
+                
+                const data = await response.json();
+                
+                if (data.success) {
+                    showToast('تم إرسال الرسالة بنجاح', 'success');
+                } else {
+                    showToast(data.message || 'خطأ في إرسال الرسالة', 'danger');
+                    // Remove the optimistic message on error
+                    removeMessageFromChat(tempId);
+                }
+            } catch (error) {
+                console.error('Error sending message:', error);
+                showToast('خطأ في إرسال الرسالة', 'danger');
+                // Remove the optimistic message on error
+                removeMessageFromChat(tempId);
+            } finally {
+                // Re-enable input and button
+                messageInput.disabled = false;
+                sendButton.disabled = false;
+                messageInput.focus();
+            }
+        }
+
+        // Add message to chat
+        function addMessageToChat(content, type, messageId = null) {
+            const messagesArea = document.getElementById('messagesArea');
+            const emptyChat = document.getElementById('emptyChat');
+            
+            // Hide empty state if it exists
+            if (emptyChat) {
+                emptyChat.style.display = 'none';
+            }
+            
+            const messageBubble = document.createElement('div');
+            messageBubble.className = `message-bubble message-${type}`;
+            messageBubble.setAttribute('data-message-id', messageId || `temp_${Date.now()}`);
+            console.log('Adding message to chat:', content, 'Type:', type, 'Classes:', messageBubble.className);
+            
+            const now = new Date();
+            const timeString = formatArabicTime(now);
+            
+            messageBubble.innerHTML = `
+                <p class="message-text">${content}</p>
+                <div class="message-time">${timeString}</div>
+            `;
+            
+            messagesArea.appendChild(messageBubble);
+            scrollToBottom();
+        }
+
+        // Remove last message (for error handling)
+        function removeLastMessage() {
+            const messagesArea = document.getElementById('messagesArea');
+            const lastMessage = messagesArea.lastElementChild;
+            if (lastMessage && lastMessage.classList.contains('message-sent')) {
+                lastMessage.remove();
+            }
+        }
+
+        // Remove message from chat (for error handling)
+        function removeMessageFromChat(messageId) {
+            const messagesArea = document.getElementById('messagesArea');
+            const messageElement = messagesArea.querySelector(`[data-message-id="${messageId}"]`);
+            if (messageElement) {
+                messageElement.remove();
+            }
+        }
+
+        // Scroll to bottom of messages
+        function scrollToBottom() {
+            const messagesArea = document.getElementById('messagesArea');
+            messagesArea.scrollTop = messagesArea.scrollHeight;
+        }
+
+        // Format time in Arabic
+        function formatArabicTime(date) {
+            const now = new Date();
+            const diff = now - date;
+            const seconds = Math.floor(diff / 1000);
+            const minutes = Math.floor(seconds / 60);
+            const hours = Math.floor(minutes / 60);
+            const days = Math.floor(hours / 24);
+            
+            if (seconds < 60) {
+                return `${seconds} ثانية`;
+            } else if (minutes < 60) {
+                return `${minutes} دقيقة`;
+            } else if (hours < 24) {
+                return `${hours} ساعة`;
+            } else if (days < 7) {
+                return `${days} يوم`;
+            } else {
+                return date.toLocaleDateString('ar-SA', {
+                    day: 'numeric',
+                    month: 'short',
+                    hour: '2-digit',
+                    minute: '2-digit'
+                });
+            }
+        }
+
+        // Utility functions
+
+        function showToast(message, type = 'info') {
+            const toastContainer = document.getElementById('toastContainer');
+            const toastId = `toast-${Date.now()}`;
+            const toastEl = document.createElement('div');
+
+            toastEl.className = `toast align-items-center text-white bg-${type} border-0 show`;
+            toastEl.id = toastId;
+            toastEl.setAttribute('role', 'alert');
+            toastEl.innerHTML = `
+                <div class="d-flex">
+                    <div class="toast-body">${message}</div>
+                    <button type="button" class="btn-close btn-close-white me-2 m-auto" data-bs-dismiss="toast"></button>
+                </div>
+            `;
+
+            toastContainer.appendChild(toastEl);
+            setTimeout(() => {
+                toastEl.remove();
+            }, 4000);
+        }
+    </script>
+
+</body>
+</html>

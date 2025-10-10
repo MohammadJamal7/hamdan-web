@@ -1,0 +1,395 @@
+/* Main Styles for Hamdan Web App */
+
+:root {
+    --primary-color: #004052;
+    --secondary-color: #f8f9fa;
+    --text-color: #333;
+    --light-text: #6c757d;
+    --danger-color: #dc3545;
+    --success-color: #28a745;
+    --border-radius: 8px;
+    --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+/* General Styles */
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    color: var(--text-color);
+    background: linear-gradient(135deg, #f5f7fa 60%, #e0e7ef 100%);
+    padding-bottom: 70px; /* Space for bottom navigation */
+    font-size: 1.08rem;
+}
+
+.container {
+    max-width: 768px;
+    padding-left: 18px;
+    padding-right: 18px;
+}
+
+/* Override Bootstrap Primary Color */
+.bg-primary {
+    background-color: var(--primary-color) !important;
+}
+
+.btn-primary {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.text-primary {
+    color: var(--primary-color) !important;
+}
+
+.btn-outline-primary {
+    color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color) !important;
+    color: white !important;
+}
+
+/* Card Styles */
+.card {
+    border-radius: 18px;
+    box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.04);
+    border: none;
+    background: rgba(255,255,255,0.85);
+    backdrop-filter: blur(8px);
+    transition: box-shadow 0.2s, transform 0.2s;
+}
+
+.card:active {
+    box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .card:hover {
+        box-shadow: 0 8px 24px rgba(0,0,0,0.13);
+        transform: translateY(-2px) scale(1.01);
+    }
+}
+
+.btn, .form-control, .form-select {
+    border-radius: 12px !important;
+    font-size: 1.08rem;
+    min-height: 44px;
+}
+
+.btn-primary, .btn-success, .btn-warning, .btn-danger {
+    box-shadow: 0 2px 8px rgba(0,0,0,0.07);
+    font-weight: 500;
+    letter-spacing: 0.01em;
+    transition: background 0.2s, color 0.2s;
+}
+
+input, textarea, select {
+    background: rgba(255,255,255,0.95) !important;
+    border: 1.5px solid #e0e7ef !important;
+    box-shadow: 0 1px 3px rgba(0,0,0,0.03);
+    padding: 10px 14px;
+    font-size: 1.08rem;
+}
+
+/* Glassmorphism utility for main cards */
+.glass-card {
+    background: rgba(255,255,255,0.82);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.12);
+    backdrop-filter: blur(12px);
+    border-radius: 20px;
+    border: 1.5px solid rgba(255,255,255,0.18);
+}
+
+/* Touch-friendly tap effect */
+.btn:active {
+    filter: brightness(0.97);
+    transform: scale(0.98);
+}
+
+/* Section Titles */
+.section-title {
+    font-size: 1.25rem;
+    margin-bottom: 1.2rem;
+    font-weight: 700;
+    letter-spacing: 0.01em;
+}
+
+/* Login & Register Pages */
+.login-container, .register-container {
+    padding: 20px;
+    margin-top: 40px;
+}
+
+.app-name {
+    color: var(--primary-color);
+    font-weight: 600;
+}
+
+.login-header, .register-header {
+    color: var(--primary-color);
+    font-weight: 500;
+}
+
+/* Toggle Password Visibility */
+.toggle-password {
+    cursor: pointer;
+}
+
+/* Bottom Navigation */
+.navbar.fixed-bottom {
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.navbar.fixed-bottom .nav-link {
+    color: var(--light-text);
+    padding: 8px 0;
+}
+
+.navbar.fixed-bottom .nav-link.active {
+    color: var(--primary-color);
+}
+
+.navbar.fixed-bottom .nav-link i {
+    font-size: 1.2rem;
+}
+
+/* Progress Bars */
+.progress {
+    background-color: #e9ecef;
+    border-radius: 10px;
+}
+
+.progress-bar {
+    background-color: var(--primary-color);
+}
+
+/* Video Player */
+.video-container {
+    background-color: #000;
+}
+
+.video-js {
+    width: 100%;
+    height: 100%;
+}
+
+.vjs-default-skin .vjs-big-play-button {
+    background-color: var(--primary-color) !important;
+    border-color: var(--primary-color) !important;
+}
+
+/* Profile Page */
+.profile-header img {
+    border: 3px solid white;
+    box-shadow: var(--box-shadow);
+}
+
+.cursor-pointer {
+    cursor: pointer;
+}
+
+/* Notifications */
+.notification-icon {
+    width: 40px;
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+/* Course Details */
+.course-thumbnail {
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+}
+
+/* Responsive Adjustments */
+@media (max-width: 576px) {
+    .container {
+        padding-left: 15px;
+        padding-right: 15px;
+    }
+}
+
+/* RTL Specific Adjustments */
+html[dir="rtl"] .ms-auto {
+    margin-right: auto !important;
+    margin-left: 0 !important;
+}
+
+html[dir="rtl"] .me-auto {
+    margin-left: auto !important;
+    margin-right: 0 !important;
+}
+
+html[dir="rtl"] .me-2 {
+    margin-left: 0.5rem !important;
+    margin-right: 0 !important;
+}
+
+html[dir="rtl"] .me-3 {
+    margin-left: 1rem !important;
+    margin-right: 0 !important;
+}
+
+html[dir="rtl"] .ms-2 {
+    margin-right: 0.5rem !important;
+    margin-left: 0 !important;
+}
+
+html[dir="rtl"] .ms-3 {
+    margin-right: 1rem !important;
+    margin-left: 0 !important;
+}
+
+/* Custom Animations */
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+.fade-in {
+    animation: fadeIn 0.3s ease-in-out;
+}
+
+/* Placeholder for images */
+.img-placeholder {
+    background-color: #e9ecef;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: #adb5bd;
+}
+
+/* Course Card Styles */
+.course-card {
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .course-card:hover {
+        transform: translateY(-4px);
+        box-shadow: 0 12px 32px rgba(0, 123, 255, 0.15), 0 4px 16px rgba(0, 0, 0, 0.1);
+    }
+}
+
+.course-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    height: 2px;
+    background: linear-gradient(90deg, #007bff, #0056b3);
+    transform: scaleX(0);
+    transition: transform 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .course-card:hover::before {
+        transform: scaleX(1);
+    }
+}
+
+.order-badge {
+    position: relative;
+    box-shadow: 0 4px 12px rgba(0, 123, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.order-badge::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.2);
+    transform: translate(-50%, -50%) scale(0);
+    transition: transform 0.3s ease;
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .course-card:hover .order-badge::after {
+        transform: translate(-50%, -50%) scale(1);
+    }
+}
+
+@media (hover: hover) and (pointer: fine) {
+    .course-card:hover .order-badge {
+        transform: scale(1.1);
+        box-shadow: 0 6px 16px rgba(0, 123, 255, 0.4);
+    }
+}
+
+/* Progress Bar Animation */
+.progress-bar {
+    transition: width 0.6s ease-in-out;
+    position: relative;
+    overflow: hidden;
+}
+
+.progress-bar::after {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    bottom: 0;
+    right: 0;
+    background-image: linear-gradient(
+        -45deg,
+        rgba(255, 255, 255, 0.2) 25%,
+        transparent 25%,
+        transparent 50%,
+        rgba(255, 255, 255, 0.2) 50%,
+        rgba(255, 255, 255, 0.2) 75%,
+        transparent 75%,
+        transparent
+    );
+    background-size: 20px 20px;
+    animation: move 1s linear infinite;
+}
+
+@keyframes move {
+    0% {
+        background-position: 0 0;
+    }
+    100% {
+        background-position: 20px 20px;
+    }
+}
+
+/* Lock Icon Animation */
+.fa-lock {
+    animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+    0% {
+        transform: scale(1);
+    }
+    50% {
+        transform: scale(1.1);
+    }
+    100% {
+        transform: scale(1);
+    }
+}
+
+/* Remove global transitions to improve performance on mobile
+   Apply transitions only to specific interactive elements */
+.btn, .card, .progress-bar, .order-badge {
+    transition: background 0.2s, color 0.2s, box-shadow 0.2s, border 0.2s, transform 0.2s;
+}
+
+/* Provide fallback for backdrop-filter on devices that don't support it */
+@supports not (backdrop-filter: blur(1px)) {
+    .card, .glass-card {
+        backdrop-filter: none;
+        background: #ffffff;
+    }
+}

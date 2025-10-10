@@ -1,0 +1,298 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8" />
+    <title>مشاهدة الفيديو</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- Bootstrap -->
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css"
+    />
+    <!-- Font Awesome -->
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
+    />
+    <link rel="stylesheet" href="css/style.css">
+    <!-- hls.js for playing .m3u8 -->
+    <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
+    <!-- Mux Player Script -->
+    <script src="https://unpkg.com/@mux/mux-player"></script>
+</head>
+<body class="bg-light">
+    <!-- Back Navigation -->
+    <nav class="navbar navbar-dark bg-primary">
+        <div class="container d-flex justify-content-between align-items-center">
+            <a href="javascript:history.back()" class="text-white">
+                <i class="fas fa-arrow-right"></i>
+            </a>
+            <h5 class="text-white mb-0">مشاهدة الفيديو</h5>
+            <div></div>
+        </div>
+    </nav>
+
+    <div class="container mt-4">
+        <div
+          id="videoContainer"
+          class="ratio ratio-16x9 bg-dark rounded d-flex justify-content-center align-items-center"
+          style="min-height: 300px"
+        >
+            <!-- Mux player will be injected here -->
+            <div class="text-white text-center py-5">جاري تحميل الفيديو...</div>
+        </div>
+        <h4 class="mt-4" id="courseTitle"></h4>
+        <p class="text-muted" id="courseDescription"></p>
+    </div>
+
+    <!-- Bootstrap JS + jQuery -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+
+    <!-- Load course and play video -->
+    <script>
+     // const BASE_URL = "http://localhost:3000/api";
+      const BASE_URL = "https://api.hamdan.help/api";
+      let player;
+      let courseId;
+      let watchInterval;
+      let currentPosition = 0;
+      let videoDuration = 0;
+
+      $(document).ready(function () {
+        const params = new URLSearchParams(window.location.search);
+        courseId = params.get("course");
+
+        if (courseId) {
+          loadCourseVideo(courseId);
+        } else {
+          $("#videoContainer").html(
+            '<div class="text-danger text-center py-5">لم يتم العثور على الفيديو</div>'
+          );
+        }
+
+        $(window).on('beforeunload', function() {
+          clearInterval(watchInterval);
+          saveWatchProgress();
+        });
+      });
+
+      async function loadCourseVideo(courseId) {
+        try {
+          const token = localStorage.getItem("token") || "";
+          // Start watching session
+          await fetch(`${BASE_URL}/courses/${courseId}/watch`, {
+            method: 'POST',
+            headers: {
+              "Authorization": `Bearer ${token}`
+            }
+          });
+
+          // Get course details and watch progress
+          const [courseRes, progressRes] = await Promise.all([
+            fetch(`${BASE_URL}/courses/${courseId}`, {
+              headers: { "Authorization": `Bearer ${token}` }
+            }),
+            fetch(`${BASE_URL}/courses/${courseId}/progress`, {
+              headers: { "Authorization": `Bearer ${token}` }
+            })
+          ]);
+
+          const courseData = await courseRes.json();
+          const progressData = await progressRes.json();
+
+          if (courseData.success && courseData.data) {
+            const course = courseData.data;
+            const progress = progressData.success ? progressData.data : null;
+
+            $("#courseTitle").text(course.title);
+            $("#courseDescription").text(course.description || "");
+
+            // Mux integration
+            const playbackId = course.muxPlaybackId || (course.playback_ids && course.playback_ids[0]?.id) || course.playback_id;
+            const playbackPolicy = course.muxPlaybackPolicy || (course.playback_ids && course.playback_ids[0]?.policy) || course.playback_policy;
+            if (playbackId) {
+              // Fetch tokens from backend
+              const tokenEndpoints = [
+                { attr: 'playback-token', url: `${BASE_URL}/mux/playback-token?playbackId=${playbackId}` },
+                { attr: 'drm-token', url: `${BASE_URL}/mux/drm-token?playbackId=${playbackId}` },
+                { attr: 'thumbnail-token', url: `${BASE_URL}/mux/thumbnail-token?playbackId=${playbackId}` },
+                { attr: 'storyboard-token', url: `${BASE_URL}/mux/storyboard-token?playbackId=${playbackId}` },
+              ];
+              const headers = { Authorization: `Bearer ${token}` };
+              const tokenFetches = tokenEndpoints.map(e => fetch(e.url, { headers }).then(r => r.json()));
+              const tokens = await Promise.all(tokenFetches);
+              // Create mux-player element
+              const muxPlayer = document.createElement('mux-player');
+              muxPlayer.setAttribute('playback-id', playbackId);
+              muxPlayer.setAttribute('style', 'width: 100%; aspect-ratio: 16/9; background: #000;');
+              muxPlayer.setAttribute('playsinline', '');
+              muxPlayer.setAttribute('preload', 'metadata');
+              muxPlayer.setAttribute('stream-type', 'on-demand');
+              
+              // Add Widevine L3 compatibility for Android tablets
+              const isAndroidTablet = /Android/i.test(navigator.userAgent) && 
+                (window.innerWidth >= 768 || window.innerHeight >= 768 || 
+                 /Android.*Tablet|Android.*Pad/i.test(navigator.userAgent));
+              
+              if (isAndroidTablet) {
+                muxPlayer.setAttribute('max-resolution', '480p');
+                muxPlayer.setAttribute('prefer-mse', 'true');
+                console.log('[VideoPlayer] Configured for Widevine L3 compatibility');
+              }
+              // Set tokens based on playback policy
+              if (playbackPolicy === 'drm') {
+                if (tokens[0].success && tokens[0].token) {
+                  muxPlayer.setAttribute('playback-token', tokens[0].token);
+                }
+                if (tokens[1].success && tokens[1].token) {
+                  muxPlayer.setAttribute('drm-token', tokens[1].token);
+                }
+              } else if (playbackPolicy === 'signed') {
+                if (tokens[0].success && tokens[0].token) {
+                  muxPlayer.setAttribute('playback-token', tokens[0].token);
+                }
+              } else if (playbackPolicy === 'public') {
+                // No token needed
+              } else if (Array.isArray(course.playback_ids) && course.playback_ids[0]?.policy && course.playback_ids.length > 1) {
+                if (tokens[0].success && tokens[0].token) {
+                  muxPlayer.setAttribute('playback-token', tokens[0].token);
+                }
+                if (tokens[1].success && tokens[1].token) {
+                  muxPlayer.setAttribute('drm-token', tokens[1].token);
+                }
+              }
+              // Always set thumbnail and storyboard tokens if available
+              if (tokens[2].success && tokens[2].token) {
+                muxPlayer.setAttribute('thumbnail-token', tokens[2].token);
+              }
+              if (tokens[3].success && tokens[3].token) {
+                muxPlayer.setAttribute('storyboard-token', tokens[3].token);
+              }
+              muxPlayer.setAttribute('metadata-title', course.title);
+              muxPlayer.setAttribute('metadata-description', course.description || '');
+              // Insert mux-player into the container
+              const container = document.getElementById("videoContainer");
+              container.innerHTML = '';
+              container.appendChild(muxPlayer);
+              // Progress tracking for mux-player
+              player = muxPlayer;
+              videoDuration = course.duration || 0;
+              // Listen for timeupdate events
+              muxPlayer.addEventListener('timeupdate', function(e) {
+                currentPosition = muxPlayer.currentTime;
+              });
+              // Set up interval to save watch progress every 10 seconds
+              watchInterval = setInterval(saveWatchProgress, 10000);
+              // Save progress when video ends
+              muxPlayer.addEventListener('ended', function() {
+                saveWatchProgress(true);
+              });
+              // Set last watched position if available (mux-player supports currentTime)
+              if (progress && progress.lastPosition) {
+                muxPlayer.currentTime = progress.lastPosition;
+              }
+            } else if (course.video && course.video.trim().toLowerCase().endsWith(".m3u8")) {
+              // Fallback: HLS.js for non-Mux HLS
+              if (Hls.isSupported()) {
+                const video = document.createElement("video");
+                video.className = "w-100 h-100";
+                video.controls = true;
+                video.playsInline = true;
+                video.setAttribute('preload', 'metadata');
+                video.style.outline = "none";
+                const hls = new Hls();
+                hls.loadSource(course.video);
+                hls.attachMedia(video);
+                hls.on(Hls.Events.MANIFEST_PARSED, () => {
+                  if (progress && progress.lastPosition) {
+                    video.currentTime = progress.lastPosition;
+                  }
+                  video.play();
+                });
+                const container = document.getElementById("videoContainer");
+                container.innerHTML = "";
+                container.appendChild(video);
+                player = video;
+                videoDuration = course.duration || 0;
+                video.addEventListener('timeupdate', function() {
+                  currentPosition = video.currentTime;
+                });
+                watchInterval = setInterval(saveWatchProgress, 10000);
+                video.addEventListener('ended', function() {
+                  saveWatchProgress(true);
+                });
+              } else {
+                $("#videoContainer").html('<div class="text-danger text-center py-5">المتصفح لا يدعم تشغيل الفيديو</div>');
+              }
+            } else if (course.video) {
+              // Fallback: MP4
+                const videoHtml = `
+                  <video controls class="w-100 h-100" preload="metadata" playsinline poster="${course.thumbnail || ""}">
+                    <source src="${course.video}" type="video/mp4" />
+                    المتصفح لا يدعم تشغيل الفيديو.
+                  </video>
+                `;
+                $("#videoContainer").html(videoHtml);
+                const video = $("#videoContainer video")[0];
+                player = video;
+                videoDuration = course.duration || 0;
+                if (progress && progress.lastPosition) {
+                  video.currentTime = progress.lastPosition;
+                }
+                video.addEventListener('timeupdate', function() {
+                  currentPosition = video.currentTime;
+                });
+                watchInterval = setInterval(saveWatchProgress, 10000);
+                video.addEventListener('ended', function() {
+                  saveWatchProgress(true);
+                });
+            } else {
+              $("#videoContainer").html(
+                '<div class="text-danger text-center py-5">رابط الفيديو غير متوفر</div>'
+              );
+            }
+          } else {
+            $("#videoContainer").html(
+              '<div class="text-danger text-center py-5">لم يتم العثور على الفيديو</div>'
+            );
+          }
+        } catch (error) {
+          console.error("Error loading video:", error);
+          $("#videoContainer").html(
+            '<div class="text-danger text-center py-5">حدث خطأ أثناء تحميل الفيديو</div>'
+          );
+        }
+      }
+
+      async function saveWatchProgress(completed = false) {
+        if (!courseId || !player) return;
+        try {
+          const token = localStorage.getItem("token") || "";
+          const duration = player.duration || videoDuration;
+          const currentPos = player.currentTime || currentPosition;
+          await fetch(`${BASE_URL}/courses/${courseId}/watch`, {
+            method: 'PUT',
+            headers: {
+              "Authorization": `Bearer ${token}`,
+              "Content-Type": "application/json"
+            },
+            body: JSON.stringify({
+              currentPosition: currentPos,
+              duration: duration
+            })
+          });
+        } catch (error) {
+          console.error('Error saving watch progress:', error);
+        }
+      }
+
+      document.addEventListener('contextmenu', e => e.preventDefault());
+      document.onkeydown = function (e) {
+        if (e.key === 'F12' || (e.ctrlKey && e.shiftKey && e.key === 'I')) {
+          return false;
+        }
+      };
+    </script>
+</body>
+</html>

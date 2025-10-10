@@ -1,0 +1,141 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>سياسة الخصوصية - حمدان</title>
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        body {
+            background-color: #f8f9fa;
+            color: #333;
+            padding: 20px;
+            text-align: center;
+        }
+        .privacy-policy-content {
+            background: #ffffff;
+            border-radius: 16px;
+            padding: 2rem;
+            margin: 2rem 0;
+            color: #333;
+            min-height: 200px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        .privacy-policy-content p {
+            margin-bottom: 1rem;
+            line-height: 1.6;
+            color: #333;
+            font-size: 1.1rem;
+        }
+        .page-title {
+            color: #2a2a2a;
+            font-weight: 600;
+            margin-bottom: 2rem;
+        }
+        .loading-spinner {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 200px;
+        }
+        .spinner-border {
+            color: #2a2a2a !important;
+        }
+        .back-button {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #2a2a2a;
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+        .back-button:hover {
+            background: #3a3a3a;
+        }
+    </style>
+</head>
+<body>
+
+
+    <!-- Main Content -->
+    <div class="container-fluid px-4">
+        <div class="row justify-content-center">
+            <div class="col-lg-10 col-xl-8">
+                <h1 class="text-center page-title">سياسة الخصوصية</h1>
+                <div id="privacyPolicyContent" class="privacy-policy-content">
+                    <div class="loading-spinner">
+                        <div class="spinner-border" role="status">
+                            <span class="visually-hidden">جاري التحميل...</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function () {
+            //const API_BASE_URL = 'http://localhost:3000/api';
+            const API_BASE_URL = 'https://api.hamdan.help/api';
+            const contentDiv = document.getElementById('privacyPolicyContent');
+
+            async function loadPrivacyPolicy() {
+                try {
+                    const token = localStorage.getItem('token');
+                    if (!token) {
+                        window.location.href = 'login.html';
+                        return;
+                    }
+
+                    const response = await fetch(`${API_BASE_URL}/settings/privacy-policy`, {
+                        method: 'GET',
+                        headers: {
+                            'Authorization': `Bearer ${token}`,
+                            'Content-Type': 'application/json'
+                        }
+                    });
+
+                    if (!response.ok) {
+                        throw new Error(`HTTP error! status: ${response.status}`);
+                    }
+
+                    const data = await response.json();
+                    console.log('Response data:', data);
+
+                    if (data.success && data.data && data.data.privacyPolicy) {
+                        console.log('Privacy policy HTML:', data.data.privacyPolicy);
+                        contentDiv.innerHTML = data.data.privacyPolicy;
+
+                        // Apply styles to paragraphs
+                        const paragraphs = contentDiv.getElementsByTagName('p');
+                        Array.from(paragraphs).forEach(p => {
+                            p.style.marginBottom = '1rem';
+                            p.style.lineHeight = '1.6';
+                            p.style.color = '#333';
+                        });
+                    } else {
+                        contentDiv.innerHTML = '<p class="text-center">لا يوجد محتوى لسياسة الخصوصية حالياً.</p>';
+                    }
+                } catch (error) {
+                    console.error('Error loading privacy policy:', error);
+                    contentDiv.innerHTML = '<p class="text-center text-danger">حدث خطأ أثناء تحميل سياسة الخصوصية.</p>';
+                }
+            }
+
+            loadPrivacyPolicy();
+        });
+    </script>
+</body>
+</html>

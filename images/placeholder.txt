@@ -1,0 +1,8 @@
+This is a placeholder file for the images directory.
+
+You'll need to add the following images:
+1. logo.png - The Hamdan logo
+2. profile-placeholder.png - A placeholder for user profile pictures
+3. video-placeholder.jpg - A placeholder for video thumbnails
+
+These images should be placed in this directory.

@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="theme-color" content="#1976d2" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="icon" href="images/logo.png" type="image/png" />
+  <title>حمدان - تفاصيل المادة</title>
+  <!-- Bootstrap RTL CSS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"/>
+  <link rel="stylesheet" href="css/style.css"/>
+  <script src="https://cdn.jsdelivr.net/npm/@mux/mux-player@latest"></script>
+  <style>
+    :root {
+      --vh: 1vh;
+    }
+    html, body {
+      height: 100%;
+      min-height: 100vh;
+      min-height: calc(var(--vh, 1vh) * 100);
+      background: linear-gradient(135deg, #f8fafc 60%, #e3e6ed 100%);
+      -webkit-overflow-scrolling: touch;
+    }
+    body {
+      min-height: 100vh;
+      min-height: calc(var(--vh, 1vh) * 100);
+      display: flex;
+      flex-direction: column;
+      margin: 0;
+      padding: 0;
+      overscroll-behavior-y: none;
+    }
+    .container {
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      align-items: stretch;
+      min-height: 0;
+      padding-bottom: 0;
+    }
+    
+    /* Mobile optimizations */
+    @media (max-width: 767px) {
+      /* Container breathing room */
+      #course-details.container { padding-inline: 12px; }
+
+      /* Header and meta */
+      .course-title { font-size: 1.25rem; margin-bottom: 0.5rem; }
+      .course-meta { font-size: 0.95rem; color: #666; display: flex; gap: 8px; }
+
+      /* Video: natural aspect and full width */
+      .course-video-container { border-radius: 12px; overflow: hidden; background: #000; }
+      #mux-player-container { width: 100%; }
+      mux-player {
+        width: 100% !important;
+        height: auto !important;
+        aspect-ratio: 16 / 9; /* modern responsive sizing */
+        background: #000;
+        display: block;
+      }
+
+      /* Description and social blocks */
+      .course-description, .social-media-section {
+        background: #fff;
+        border-radius: 12px;
+        box-shadow: 0 2px 6px rgba(0,0,0,0.05);
+        padding: 12px 14px;
+        margin-top: 12px;
+      }
+      .description-content { line-height: 1.7; font-size: 1rem; }
+
+      /* Modal sizing */
+      .modal-dialog { margin: 10px auto; max-width: calc(100% - 20px); }
+      .question-option { padding: 12px; font-size: 16px; }
+    }
+    .card {
+      transition: all 0.3s ease;
+      border: none;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+      max-width: 500px;
+      margin: 0 auto 0 auto;
+      border-radius: 18px;
+      padding: 0;
+      background: #fff;
+      min-height: 60vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .card .mux-player, .card mux-player, .card-img-top {
+      margin-bottom: 1rem;
+      border-radius: 18px 18px 0 0;
+      max-height: 220px;
+      object-fit: cover;
+      width: 100%;
+      background: #000;
+    }
+    .card-body {
+      padding: 1.1rem 1rem 0.7rem 1rem;
+      flex: 1 1 auto;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+    }
+    .card-title {
+      font-weight: 600;
+      color: #333;
+      margin-bottom: 1rem;
+      font-size: 1.2rem;
+    }
+    .card-text {
+      color: #666;
+      line-height: 1.6;
+      font-size: 1rem;
+    }
+    @media (max-width: 600px) {
+      .container {
+        padding-left: 0.3rem !important;
+        padding-right: 0.3rem !important;
+        min-height: 0;
+      }
+      .card {
+        max-width: 100vw;
+        margin: 0 -0.5rem 0  -0.5rem;
+        border-radius: 12px;
+        min-height: 65vh;
+      }
+      .card .mux-player, .card mux-player, .card-img-top {
+        max-height: 170px;
+        border-radius: 12px 12px 0 0;
+      }
+      .card-body {
+        padding: 0.7rem 0.5rem 0.3rem 0.5rem;
+      }
+      .card-title {
+        font-size: 1.05rem;
+      }
+      .card-text {
+        font-size: 0.97rem;
+      }
+    }
+    /* Two-column layout for large screens */
+    .course-layout {
+      display: block;
+    }
+    .course-right, .course-left { width: 100%; }
+    
+    @media (min-width: 992px) { /* lg and up */
+      /* Make container full-width for this page */
+      #course-details.container { max-width: 100%; padding-inline: 24px; }
+      .course-layout {
+        display: grid;
+        grid-template-columns: 1fr 1fr; /* split page into two equal parts */
+        gap: 24px;
+        align-items: stretch;
+        /* Height will be set via CSS variables computed from navbars */
+        height: calc(100vh - var(--top-nav-h, 64px) - var(--bottom-nav-h, 64px) - 32px);
+      }
+      /* RTL: first column visually on the right */
+      html[dir="rtl"] .course-layout { grid-auto-flow: dense; }
+      html[dir="rtl"] .course-right { grid-column: 1; }
+      html[dir="rtl"] .course-left { grid-column: 2; }
+      
+      .course-right,
+      .course-left { min-height: 0; overflow: auto; }
+      .course-right { min-height: 0; overflow: auto; }
+
+      /* Make right column split into header + expanding video */
+      .course-right { display: flex; flex-direction: column; }
+      .course-right .course-header { flex: 0 0 auto; }
+      .course-right .course-video-container { flex: 1 1 auto; }
+
+      .course-right .course-video-container {
+        position: relative;
+        border-radius: 16px;
+        overflow: hidden;
+        background: #000;
+        box-shadow: 0 6px 18px rgba(0,0,0,0.12);
+        display: flex;
+        flex-direction: column; /* child (#mux-player-container) will grow */
+      }
+      .course-right #mux-player-container { flex: 1 1 auto; min-height: 0; }
+      .course-right mux-player,
+      .course-right .mux-player {
+        width: 100% !important;
+        height: 100% !important; /* video fills the available height */
+        object-fit: contain; /* maintain aspect ratio */
+        background: #000;
+      }
+      .course-right .loading-spinner { height: 100%; display: flex; align-items: center; justify-content: center; }
+      .course-right .course-header {
+        margin-bottom: 12px;
+      }
+      .course-title {
+        font-size: 1.75rem;
+        margin-bottom: 0.35rem;
+      }
+      .course-meta { color: #666; font-size: 0.95rem; display: flex; gap: 12px; }
+      
+      .course-left .course-description,
+      .course-left .social-media-section {
+        background: #fff;
+        border-radius: 14px;
+        box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+        padding: 16px 18px;
+        margin-bottom: 16px;
+      }
+      /* Vertically center left column content and constrain width nicely */
+      .course-left {
+        display: flex;
+        flex-direction: column;
+        justify-content: center; /* vertical centering */
+        gap: 16px;
+        padding-block: 8px;
+      }
+      .course-left .course-description,
+      .course-left .social-media-section {
+        width: min(90%, 720px);
+        margin-inline: auto; /* center within column */
+      }
+    }
+    
+    /* XL: keep equal split, no sticky so both fill height symmetrically */
+  </style>
+</head>
+<body>
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <div class="container">
+      <div class="d-flex justify-content-between w-100 align-items-center">
+        <a href="javascript:history.back()" class="text-white">
+          <i class="fas fa-arrow-right fa-lg"></i>
+        </a>
+        <h5 class="text-white mb-0">تفاصيل المادة</h5>
+        <a href="http://t.me/hamdan2S" class="text-white">
+          <i class="fas fa-phone fa-lg"></i>
+        </a>
+      </div>
+    </div>
+  </nav>
+  <!-- Course Info -->
+  <div class="container mt-4 mb-5 pb-5" id="course-details">
+    <!-- Content will be injected by JS -->
+    <div id="lockNotification" class="text-center py-3"></div>
+    <div class="text-center py-5">
+      <div class="spinner-border text-primary" role="status">
+        <span class="visually-hidden">جاري التحميل...</span>
+      </div>
+    </div>
+    <!-- Social Media Section -->
+    <div class="social-media-section" id="socialMediaSection" style="display: none;">
+      <div class="social-media-title">
+        <i class="fas fa-share-alt"></i> روابط التواصل الاجتماعي
+      </div>
+      <div class="social-media-links" id="socialMediaLinks">
+        <!-- Social media links will be injected here by JS -->
+      </div>
+    </div>
+  </div>
+  <!-- Bottom Nav -->
+  <nav class="navbar fixed-bottom navbar-light bg-white border-top">
+    <div class="container">
+      <div class="d-flex justify-content-around w-100">
+        <a href="dashboard.html" class="nav-link text-center">
+          <i class="fas fa-home"></i><div class="small">الرئيسية</div>
+        </a>
+        <a href="playlists.html" class="nav-link active text-center">
+          <i class="fas fa-list"></i><div class="small">المواد</div>
+        </a>
+        <a href="playlist-requests.html" class="nav-link text-center">
+          <i class="fas fa-plus-circle"></i><div class="small">طلب مادة</div>
+        </a>
+        <a href="notifications.html" class="nav-link text-center">
+          <i class="fas fa-bell"></i><div class="small">الإشعارات</div>
+        </a>
+        <a href="profile.html" class="nav-link text-center">
+          <i class="fas fa-user"></i><div class="small">الملف الشخصي</div>
+        </a>
+      </div>
+    </div>
+  </nav>
+  <!-- JS Scripts -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="js/course-details2.js?v=1.0.6"></script>
+</body>
+  <script src="js/pwa.js" defer></script>
+  <script>
+    // Compute dynamic heights to allow the two columns to fill the page
+    (function () {
+      function setLayoutHeights() {
+        const topNav = document.querySelector('body > nav.navbar:not(.fixed-bottom)');
+        const bottomNav = document.querySelector('nav.navbar.fixed-bottom');
+        const topH = topNav ? topNav.offsetHeight : 64;
+        const bottomH = bottomNav ? bottomNav.offsetHeight : 64;
+        document.documentElement.style.setProperty('--top-nav-h', topH + 'px');
+        document.documentElement.style.setProperty('--bottom-nav-h', bottomH + 'px');
+      }
+      window.addEventListener('load', setLayoutHeights);
+      window.addEventListener('resize', setLayoutHeights);
+      document.addEventListener('DOMContentLoaded', setLayoutHeights);
+      // Observe mutations that could alter nav height
+      const obs = new ResizeObserver(setLayoutHeights);
+      const topNavEl = document.querySelector('body > nav.navbar:not(.fixed-bottom)');
+      const bottomNavEl = document.querySelector('nav.navbar.fixed-bottom');
+      if (topNavEl) obs.observe(topNavEl);
+      if (bottomNavEl) obs.observe(bottomNavEl);
+    })();
+  </script>
+</html>
