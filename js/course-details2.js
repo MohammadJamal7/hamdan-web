@@ -1573,11 +1573,48 @@ $(document).ready(function () {
           `;
         }
         
-        // Video logic with tokens and continue watching
+        // Video logic with Bunny support and continue watching
         const playbackId = course.muxPlaybackId || (course.playback_ids && course.playback_ids[0]?.id) || course.playback_id;
         const playbackPolicy = course.muxPlaybackPolicy || (course.playback_ids && course.playback_ids[0]?.policy) || course.playback_policy;
         
+        async function getBunnyPlayerHtml() {
+          // Try to get Bunny video ID from course data
+          let videoId = course.bunnyVideoId;
+          
+          // If no bunnyVideoId, try to extract from video URL
+          if (!videoId && course.video) {
+            // Extract video ID from URL like: https://vz-543301.b-cdn.net/{videoId}/playlist.m3u8
+            const match = course.video.match(/\/([a-f0-9-]+)\/playlist\.m3u8/);
+            if (match) {
+              videoId = match[1];
+            }
+          }
+          
+          // If we have a Bunny video ID, show Bunny player
+          if (videoId) {
+            const lastPosition = localStorage.getItem(`course_${courseId}_position`);
+            const startTime = lastPosition ? `&start=${Math.floor(lastPosition)}` : '';
+            
+            return `
+              <div style="position:relative;padding-top:56.25%;width:100%;border-radius:12px;overflow:hidden;background:#000;">
+                <iframe 
+                  id="bunnyPlayer"
+                  src="https://iframe.mediadelivery.net/embed/543301/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true${startTime}" 
+                  loading="lazy" 
+                  style="border:0;position:absolute;top:0;height:100%;width:100%;" 
+                  allow="autoplay; encrypted-media; fullscreen; picture-in-picture;" 
+                  allowfullscreen="true"
+                ></iframe>
+              </div>
+            `;
+          }
+          
+          // Fallback: If no Bunny video, try Mux (commented for later use)
+          return await getMuxPlayerHtml();
+        }
+        
         async function getMuxPlayerHtml() {
+          /* ===== MUX PLAYER CODE (HIDDEN FOR LATER USE) =====
           if (playbackId) {
             // Fetch tokens from backend
             const tokenEndpoints = [
@@ -1635,6 +1672,8 @@ $(document).ready(function () {
           } else {
             return '<div class="alert alert-warning">لا يوجد فيديو متاح لهذه المادة</div>';
           }
+          ===== END MUX PLAYER CODE (HIDDEN) ===== */
+          return '<div class="alert alert-warning">لا يوجد فيديو متاح لهذه المادة</div>';
         }
         
         // Get platform icon
@@ -1689,239 +1728,129 @@ $(document).ready(function () {
         
         $('#course-details').html(courseDetailsHtml);
         
-        // Initialize Mux Player
-        getMuxPlayerHtml().then(html => {
+        // Initialize Bunny Player (or Mux as fallback)
+        getBunnyPlayerHtml().then(html => {
           $('#mux-player-container').html(html);
           
-          // Wait for Mux Player to be defined
-          const checkMuxInterval = setInterval(() => {
-            if (document.querySelector('mux-player')) {
-              clearInterval(checkMuxInterval);
-              
-              // Get reference to the player
-              window.muxPlayer = document.querySelector('mux-player');
-              muxPlayer = window.muxPlayer;
-              
-              // Configure player for Widevine L3 devices
-              if (window.isWidevineL3Device && muxPlayer) {
-                try {
-                  // Configure adaptive bitrate to allow SD renditions
-                  muxPlayer.configure({
-                    abr: {
-                      restrictions: {
-                        maxHeight: 480, // Allow SD for L3 devices
-                        maxWidth: 854   // 480p width
-                      }
-                    }
-                  });
-                  
-                  enhancedDebugLog('WIDEVINE_L3', 'Applied ABR restrictions for L3 device', {
-                    maxHeight: 480,
-                    maxWidth: 854
-                  });
-                } catch (error) {
-                  enhancedDebugLog('WIDEVINE_L3', 'Failed to configure ABR restrictions', error);
-                }
+          // Check if Bunny player was loaded (iframe exists)
+          const bunnyPlayer = document.querySelector('#bunnyPlayer');
+          if (bunnyPlayer) {
+            // Bunny player loaded successfully
+            enhancedDebugLog('BUNNY', 'Bunny player loaded successfully', { videoId: course.bunnyVideoId });
+            
+            // Start watching session
+            fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
+              method: 'POST',
+              headers: {
+                'Authorization': `Bearer ${token}`,
+                'Content-Type': 'application/json'
               }
-              
-              // Start watching session
-              fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
-                method: 'POST',
-                headers: {
-                  'Authorization': `Bearer ${token}`,
-                  'Content-Type': 'application/json'
-                }
-              }).catch(err => console.error('Error starting watch session:', err));
-
-              // Save playback position every 10 seconds and send to API
-              if (muxPlayer) {
-                setInterval(async () => {
-                  if (muxPlayer && typeof muxPlayer.currentTime === 'number' && typeof muxPlayer.duration === 'number') {
-                    const currentTime = muxPlayer.currentTime;
-                    const duration = muxPlayer.duration;
-                    if (currentTime > 0 && duration > 0) {
-                      // Save to localStorage for continue watching
-                      localStorage.setItem(`course_${courseId}_position`, currentTime);
-                      
-                      // Send to API for watch history tracking
-                      try {
-                        await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
-                          method: 'PUT',
-                          headers: {
-                            'Authorization': `Bearer ${token}`,
-                            'Content-Type': 'application/json'
-                          },
-                          body: JSON.stringify({
-                            currentPosition: currentTime,
-                            duration: duration
-                          })
-                        });
-                      } catch (err) {
-                        console.error('Error saving watch progress:', err);
-                      }
-                    }
-                  }
-                }, 10000);
+            }).catch(err => console.error('Error starting watch session:', err));
+            
+            // For Bunny player, we track watch progress differently
+            // Note: Bunny iframe doesn't expose playback position directly, so we track via timer
+            setInterval(async () => {
+              // Send heartbeat to API for watch history tracking
+              try {
+                await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
+                  method: 'PUT',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                    currentPosition: 0, // Bunny iframe doesn't expose position
+                    duration: course.duration || 0
+                  })
+                });
+              } catch (err) {
+                console.error('Error saving watch progress:', err);
+              }
+            }, 10000);
+            
+            // Load questions for this course
+            loadCourseQuestions(courseId);
+          } else {
+            // Wait for Mux Player to be defined (fallback)
+            const checkMuxInterval = setInterval(() => {
+              if (document.querySelector('mux-player')) {
+                clearInterval(checkMuxInterval);
                 
-                // Load questions for this course
-                loadCourseQuestions(courseId).then(() => {
-                  // Start question checking after questions are loaded
-                  if (courseQuestions.length > 0) {
-                    enhancedDebugLog('QUESTIONS', `Starting question system with ${courseQuestions.length} questions`);
-                    startQuestionChecking();
+                // Get reference to the player
+                window.muxPlayer = document.querySelector('mux-player');
+                muxPlayer = window.muxPlayer;
+                
+                /* ===== MUX PLAYER CONFIGURATION (HIDDEN FOR LATER USE) =====
+                // Configure player for Widevine L3 devices
+                if (window.isWidevineL3Device && muxPlayer) {
+                  try {
+                    // Configure adaptive bitrate to allow SD renditions
+                    muxPlayer.configure({
+                      abr: {
+                        restrictions: {
+                          maxHeight: 480, // Allow SD for L3 devices
+                          maxWidth: 854   // 480p width
+                        }
+                      }
+                    });
                     
-                    // Add question markers to the timeline
-                    setTimeout(() => {
-                      addQuestionMarkersToTimeline();
-                    }, 1500); // Wait for player to fully initialize
-                  } else {
-                    enhancedDebugLog('QUESTIONS', 'No questions found for this course');
+                    enhancedDebugLog('WIDEVINE_L3', 'Applied ABR restrictions for L3 device', {
+                      maxHeight: 480,
+                      maxWidth: 854
+                    });
+                  } catch (error) {
+                    enhancedDebugLog('WIDEVINE_L3', 'Failed to configure ABR restrictions', error);
                   }
-                });
-                
-                // Add video event listeners
-                muxPlayer.addEventListener('loadedmetadata', () => {
-                  enhancedDebugLog('VIDEO', 'Video metadata loaded');
-                  // Refresh question markers after metadata is loaded
-                  setTimeout(addQuestionMarkersToTimeline, 500);
-                });
-                
-                // Add error handling for DRM issues
-                muxPlayer.addEventListener('error', (event) => {
-                  const error = event.detail;
-                  enhancedDebugLog('VIDEO_ERROR', 'Video player error', error);
-                  
-                  // Check for DRM-related errors
-                  if (error && (
-                    error.message?.includes('demuxer_error_could_not_parse') ||
-                    error.message?.includes('Source not supported') ||
-                    error.code === 'MEDIA_ERR_SRC_NOT_SUPPORTED'
-                  )) {
-                    if (window.isWidevineL3Device) {
-                      enhancedDebugLog('DRM_ERROR', 'DRM error on L3 device - may need SD rendition', {
-                        error: error.message || error.code,
-                        deviceType: 'Widevine L3'
-                      });
-                      
-                      // Show user-friendly error message
-                      const errorContainer = document.getElementById('mux-player-container');
-                      if (errorContainer) {
-                        errorContainer.innerHTML = `
-                          <div class="alert alert-warning text-center p-4">
-                            <i class="fas fa-exclamation-triangle fa-2x mb-3"></i>
-                            <h5>مشكلة في تشغيل الفيديو</h5>
-                            <p>يبدو أن جهازك لا يدعم تشغيل الفيديو عالي الجودة مع الحماية.</p>
-                            <p class="small text-muted">يرجى المحاولة على جهاز آخر أو تحديث المتصفح.</p>
-                          </div>
-                        `;
-                      }
-                    }
-                  }
-                });
-                
-                muxPlayer.addEventListener('play', () => {
-                  enhancedDebugLog('VIDEO', 'Video started playing');
-                });
-                
-                muxPlayer.addEventListener('pause', () => {
-                  enhancedDebugLog('VIDEO', 'Video paused');
-                });
-                
-                muxPlayer.addEventListener('ended', async () => {
-                  enhancedDebugLog('VIDEO', 'Video ended');
-                  stopQuestionChecking();
-                  
-                  // Save final progress when video ends
-                  if (muxPlayer && typeof muxPlayer.currentTime === 'number' && typeof muxPlayer.duration === 'number') {
-                    const currentTime = muxPlayer.currentTime;
-                    const duration = muxPlayer.duration;
-                    try {
-                      await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
-                        method: 'PUT',
-                        headers: {
-                          'Authorization': `Bearer ${token}`,
-                          'Content-Type': 'application/json'
-                        },
-                        body: JSON.stringify({
-                          currentPosition: currentTime,
-                          duration: duration
-                        })
-                      });
-                    } catch (err) {
-                      console.error('Error saving final watch progress:', err);
-                    }
-                  }
-                });
-                
-                // Listen for duration changes to update markers
-                muxPlayer.addEventListener('durationchange', () => {
-                  enhancedDebugLog('VIDEO', 'Video duration changed');
-                  setTimeout(addQuestionMarkersToTimeline, 300);
-                });
-
-                // --- Seek Guard: prevent skipping unanswered questions ---
-                let lastTime = 0;
-                let isProgrammaticSeek = false;
-
-                // Helper: find next unanswered question between two times (forward only)
-                function findNextUnansweredQuestionBetween(fromTime, toTime) {
-                  if (!Array.isArray(courseQuestions) || !courseQuestions.length) return null;
-                  if (toTime <= fromTime) return null; // only guard forward skips
-                  // find first question with t in (fromTime, toTime]
-                  const next = courseQuestions.find(q => {
-                    const t = Number(q.timestamp) || 0;
-                    return t > fromTime && t <= toTime && !answeredQuestions.includes(q._id || q.id || q.questionId);
-                  });
-                  return next || null;
                 }
-
-                muxPlayer.addEventListener('timeupdate', () => {
-                  lastTime = muxPlayer.currentTime || lastTime;
-                });
-
-                muxPlayer.addEventListener('seeking', () => {
-                  if (isProgrammaticSeek) return; // ignore our own corrections
-                  const currentTarget = muxPlayer.currentTime || 0;
-                  const gate = findNextUnansweredQuestionBetween(lastTime, currentTarget);
-                  if (gate) {
-                    isProgrammaticSeek = true;
-                    const snap = Math.max((Number(gate.timestamp) || 0) - 0.2, 0);
-                    muxPlayer.currentTime = snap;
-                    muxPlayer.pause();
-                    enhancedDebugLog('GUARD', `Blocked skip over question @${gate.timestamp}s via player seek`);
-                    // allow next seeks again after a tick
-                    setTimeout(() => { isProgrammaticSeek = false; }, 0);
-                  }
-                });
+                ===== END MUX PLAYER CONFIGURATION (HIDDEN) ===== */
                 
-                // Save progress when user leaves the page
-                window.addEventListener('beforeunload', async () => {
-                  if (muxPlayer && typeof muxPlayer.currentTime === 'number' && typeof muxPlayer.duration === 'number') {
-                    const currentTime = muxPlayer.currentTime;
-                    const duration = muxPlayer.duration;
-                    if (currentTime > 0 && duration > 0) {
-                      // Use sendBeacon for reliability on page unload
-                      const data = JSON.stringify({
-                        currentPosition: currentTime,
-                        duration: duration
-                      });
-                      
-                      if (navigator.sendBeacon) {
+                // Start watching session
+                fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
+                  method: 'POST',
+                  headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                  }
+                }).catch(err => console.error('Error starting watch session:', err));
+
+                // Save playback position every 10 seconds and send to API
+                if (muxPlayer) {
+                  setInterval(async () => {
+                    if (muxPlayer && typeof muxPlayer.currentTime === 'number' && typeof muxPlayer.duration === 'number') {
+                      const currentTime = muxPlayer.currentTime;
+                      const duration = muxPlayer.duration;
+                      if (currentTime > 0 && duration > 0) {
+                        // Save to localStorage for continue watching
+                        localStorage.setItem(`course_${courseId}_position`, currentTime);
+                        
+                        // Send to API for watch history tracking
                         try {
-                          navigator.sendBeacon(`${window.API_BASE_URL}/courses/${courseId}/watch`, data);
+                          await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
+                            method: 'PUT',
+                            headers: {
+                              'Authorization': `Bearer ${token}`,
+                              'Content-Type': 'application/json'
+                            },
+                            body: JSON.stringify({
+                              currentPosition: currentTime,
+                              duration: duration
+                            })
+                          });
                         } catch (err) {
-                          console.error('Error with sendBeacon:', err);
+                          console.error('Error saving watch progress:', err);
                         }
                       }
                     }
-                  }
-                });
-                
-                // Log player ready
-                console.log('[VideoPlayer] Mux player initialized with questions support');
+                  }, 10000);
+                  
+                  // Load questions for this course
+                  loadCourseQuestions(courseId);
+                }
               }
-            }
-          }, 500);
+            }, 100);
+            
+            setTimeout(() => clearInterval(checkMuxInterval), 2000);
+          }
         });
       } else {
         $('#course-details').html('<p class="text-danger text-center">لم يتم العثور على المادة</p>');
