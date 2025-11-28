@@ -1614,7 +1614,7 @@ $(document).ready(function () {
         }
         
         async function getMuxPlayerHtml() {
-          /* ===== MUX PLAYER CODE (HIDDEN FOR LATER USE) =====
+          // ===== MUX PLAYER CODE (ENABLED) =====
           if (playbackId) {
             // Fetch tokens from backend
             const tokenEndpoints = [
@@ -1626,10 +1626,10 @@ $(document).ready(function () {
             const headers = { Authorization: `Bearer ${token}` };
             const tokenFetches = tokenEndpoints.map(e => fetch(e.url, { headers }).then(r => r.json()));
             const tokens = await Promise.all(tokenFetches);
-            
+
             // Add mobile-specific attributes for better playback
             let mobileAttrs = window.isMobile ? 'preload="auto" playsinline="true"' : '';
-            
+
             // Add Widevine L3 compatibility attributes for Android tablets
             let l3Attrs = '';
             if (window.isWidevineL3Device) {
@@ -1639,7 +1639,7 @@ $(document).ready(function () {
                 playbackPolicy: playbackPolicy
               });
             }
-            
+
             let attrs = `playback-id="${playbackId}" style="width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;" metadata-title="${course.title}" metadata-description="${course.description || ''}" stream-type="on-demand" controls ${mobileAttrs} ${l3Attrs}`;
             if (playbackPolicy === 'drm') {
               if (tokens[0].success && tokens[0].token) attrs += ` playback-token="${tokens[0].token}"`;
@@ -1651,29 +1651,27 @@ $(document).ready(function () {
             } else if (Array.isArray(course.playback_ids) && course.playback_ids[0]?.policy && course.playback_ids.length > 1) {
               if (tokens[0].success && tokens[0].token) attrs += ` playback-token="${tokens[0].token}"`;
             }
-            
+
             // Add storyboard token if available
             if (tokens[3].success && tokens[3].token) {
               attrs += ` storyboard-token="${tokens[3].token}"`;
             }
-            
+
             // Add thumbnail token if available
             if (tokens[2].success && tokens[2].token) {
               attrs += ` thumbnail-token="${tokens[2].token}"`;
             }
-            
+
             // Add continue watching functionality
             const lastPosition = localStorage.getItem(`course_${courseId}_position`);
             if (lastPosition) {
               attrs += ` start-time="${lastPosition}"`;
             }
-            
+
             return `<mux-player id="muxPlayer" ${attrs}></mux-player>`;
           } else {
             return '<div class="alert alert-warning">لا يوجد فيديو متاح لهذه المادة</div>';
           }
-          ===== END MUX PLAYER CODE (HIDDEN) ===== */
-          return '<div class="alert alert-warning">لا يوجد فيديو متاح لهذه المادة</div>';
         }
         
         // Get platform icon
