@@ -1578,26 +1578,27 @@ $(document).ready(function () {
         const playbackPolicy = course.muxPlaybackPolicy || (course.playback_ids && course.playback_ids[0]?.policy) || course.playback_policy;
         
         async function getBunnyPlayerHtml() {
-          // Try to get Bunny video ID from course data
+          // Try to get Bunny video ID from course data or extract from video URL (robust like admin dash)
           let videoId = course.bunnyVideoId;
-          // If no bunnyVideoId, try to extract from video URL
           if (!videoId && course.video) {
+            // Try to extract from Bunny HLS URL
             const match = course.video.match(/\/([a-f0-9-]+)\/playlist\.m3u8/);
             if (match) {
               videoId = match[1];
             }
           }
-          // If we have a Bunny video ID, show Bunny player
           if (videoId) {
+            // Use the same Bunny zone as admin dash (548882)
+            const embedZone = '548882';
             const lastPosition = localStorage.getItem(`course_${courseId}_position`);
             const startTime = lastPosition ? `&start=${Math.floor(lastPosition)}` : '';
             return `
               <div style="position:relative;padding-top:56.25%;width:100%;border-radius:12px;overflow:hidden;background:#000;">
                 <iframe 
                   id="bunnyPlayer"
-                  src="https://iframe.mediadelivery.net/embed/543301/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true${startTime}" 
+                  src="https://iframe.mediadelivery.net/embed/${embedZone}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true${startTime}" 
                   loading="lazy" 
-                  style="border:0;position:absolute;top:0;height:100%;width:100%;" 
+                  style="border:0;position:absolute;top:0;height:100%;width:100%;border-radius:4px;" 
                   allow="autoplay; encrypted-media; fullscreen; picture-in-picture;" 
                   allowfullscreen="true"
                 ></iframe>
