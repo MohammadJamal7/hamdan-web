@@ -1550,8 +1550,12 @@ $(document).ready(function () {
       return res.json();
     })
     .then(res => {
+      // --- LOG: API response ---
+      console.log('[COURSE DETAILS] API response:', res);
       if (res.success && res.data) {
         const course = res.data;
+        // LOG: Course object
+        console.log('[COURSE DETAILS] Course object:', course);
         // Social media section
         let socialMediaHtml = '';
         if (course.socialMedia && course.socialMedia.length > 0) {
@@ -1572,31 +1576,43 @@ $(document).ready(function () {
             </div>
           `;
         }
-        
         // Video logic with Bunny support and continue watching
         const playbackId = course.muxPlaybackId || (course.playback_ids && course.playback_ids[0]?.id) || course.playback_id;
         const playbackPolicy = course.muxPlaybackPolicy || (course.playback_ids && course.playback_ids[0]?.policy) || course.playback_policy;
-        
+        // --- LOG: Bunny fields ---
+        console.log('[COURSE DETAILS] bunnyVideoId:', course.bunnyVideoId, '| video:', course.video);
         async function getBunnyPlayerHtml() {
           // Try to get Bunny video ID from course data or extract from video URL (robust like admin dash)
           let videoId = course.bunnyVideoId;
+          // LOG: Initial bunnyVideoId
+          console.log('[COURSE DETAILS] getBunnyPlayerHtml: initial bunnyVideoId:', videoId);
           if (!videoId && course.video) {
             // Try to extract from Bunny HLS URL
             const match = course.video.match(/\/([a-f0-9-]+)\/playlist\.m3u8/);
             if (match) {
               videoId = match[1];
+              // LOG: Extracted videoId from video URL
+              console.log('[COURSE DETAILS] getBunnyPlayerHtml: extracted videoId from video URL:', videoId);
+            } else {
+              // LOG: No match in video URL
+              console.log('[COURSE DETAILS] getBunnyPlayerHtml: no match in video URL:', course.video);
             }
           }
+          // LOG: Final videoId to use
+          console.log('[COURSE DETAILS] getBunnyPlayerHtml: final videoId:', videoId);
           if (videoId) {
             // Use the same Bunny zone as admin dash (548882)
             const embedZone = '548882';
             const lastPosition = localStorage.getItem(`course_${courseId}_position`);
             const startTime = lastPosition ? `&start=${Math.floor(lastPosition)}` : '';
+            // LOG: Bunny iframe src
+            const bunnySrc = `https://iframe.mediadelivery.net/embed/${embedZone}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true${startTime}`;
+            console.log('[COURSE DETAILS] getBunnyPlayerHtml: iframe src:', bunnySrc);
             return `
               <div style="position:relative;padding-top:56.25%;width:100%;border-radius:12px;overflow:hidden;background:#000;">
                 <iframe 
                   id="bunnyPlayer"
-                  src="https://iframe.mediadelivery.net/embed/${embedZone}/${videoId}?autoplay=false&loop=false&muted=false&preload=true&responsive=true${startTime}" 
+                  src="${bunnySrc}" 
                   loading="lazy" 
                   style="border:0;position:absolute;top:0;height:100%;width:100%;border-radius:4px;" 
                   allow="autoplay; encrypted-media; fullscreen; picture-in-picture;" 
@@ -1606,9 +1622,9 @@ $(document).ready(function () {
             `;
           }
           // No Bunny video available
+          console.log('[COURSE DETAILS] getBunnyPlayerHtml: No Bunny videoId found, showing warning.');
           return `<div class='alert alert-warning text-center'>لا يوجد فيديو لهذه المادة حاليا.</div>`;
         }
-        
         // Get platform icon
         function getPlatformIcon(platform) {
           const platformLower = platform.toLowerCase();
@@ -1626,7 +1642,6 @@ $(document).ready(function () {
           if (platformLower.includes('phone')) return 'fas fa-phone';
           return 'fas fa-link'; // Default icon
         }
-        
         // Render course details in a two-column layout (right: title+video, left: details)
         const courseDetailsHtml = `
           <div class="course-layout">
@@ -1658,19 +1673,21 @@ $(document).ready(function () {
             </div>
           </div>
         `;
-        
+        // LOG: Rendered course details HTML
+        console.log('[COURSE DETAILS] Rendered courseDetailsHtml:', courseDetailsHtml);
         $('#course-details').html(courseDetailsHtml);
-        
         // Initialize Bunny Player (or Mux as fallback)
         getBunnyPlayerHtml().then(html => {
+          // LOG: Bunny player HTML result
+          console.log('[COURSE DETAILS] Bunny player HTML:', html);
           $('#mux-player-container').html(html);
-          
           // Check if Bunny player was loaded (iframe exists)
           const bunnyPlayer = document.querySelector('#bunnyPlayer');
           if (bunnyPlayer) {
             // Bunny player loaded successfully
             enhancedDebugLog('BUNNY', 'Bunny player loaded successfully', { videoId: course.bunnyVideoId });
-            
+            // LOG: Bunny player iframe element
+            console.log('[COURSE DETAILS] Bunny player iframe element:', bunnyPlayer);
             // Start watching session
             fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
               method: 'POST',
@@ -1679,7 +1696,6 @@ $(document).ready(function () {
                 'Content-Type': 'application/json'
               }
             }).catch(err => console.error('Error starting watch session:', err));
-            
             // For Bunny player, we track watch progress differently
             // Note: Bunny iframe doesn't expose playback position directly, so we track via timer
             setInterval(async () => {
@@ -1700,19 +1716,20 @@ $(document).ready(function () {
                 console.error('Error saving watch progress:', err);
               }
             }, 10000);
-            
             // Load questions for this course
             loadCourseQuestions(courseId);
           } else {
+            // LOG: Bunny player not found, fallback to Mux
+            console.log('[COURSE DETAILS] Bunny player not found, fallback to Mux.');
             // Wait for Mux Player to be defined (fallback)
             const checkMuxInterval = setInterval(() => {
               if (document.querySelector('mux-player')) {
                 clearInterval(checkMuxInterval);
-                
                 // Get reference to the player
                 window.muxPlayer = document.querySelector('mux-player');
                 muxPlayer = window.muxPlayer;
-                
+                // LOG: Mux player element found
+                console.log('[COURSE DETAILS] Mux player element found:', muxPlayer);
                 /* ===== MUX PLAYER CONFIGURATION (HIDDEN FOR LATER USE) =====
                 // Configure player for Widevine L3 devices
                 if (window.isWidevineL3Device && muxPlayer) {
@@ -1726,7 +1743,6 @@ $(document).ready(function () {
                         }
                       }
                     });
-                    
                     enhancedDebugLog('WIDEVINE_L3', 'Applied ABR restrictions for L3 device', {
                       maxHeight: 480,
                       maxWidth: 854
@@ -1736,7 +1752,6 @@ $(document).ready(function () {
                   }
                 }
                 ===== END MUX PLAYER CONFIGURATION (HIDDEN) ===== */
-                
                 // Start watching session
                 fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
                   method: 'POST',
@@ -1745,7 +1760,6 @@ $(document).ready(function () {
                     'Content-Type': 'application/json'
                   }
                 }).catch(err => console.error('Error starting watch session:', err));
-
                 // Save playback position every 10 seconds and send to API
                 if (muxPlayer) {
                   setInterval(async () => {
@@ -1755,7 +1769,6 @@ $(document).ready(function () {
                       if (currentTime > 0 && duration > 0) {
                         // Save to localStorage for continue watching
                         localStorage.setItem(`course_${courseId}_position`, currentTime);
-                        
                         // Send to API for watch history tracking
                         try {
                           await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
@@ -1775,22 +1788,23 @@ $(document).ready(function () {
                       }
                     }
                   }, 10000);
-                  
                   // Load questions for this course
                   loadCourseQuestions(courseId);
                 }
               }
             }, 100);
-            
             setTimeout(() => clearInterval(checkMuxInterval), 2000);
           }
         });
       } else {
+        // LOG: No course found in API response
+        console.log('[COURSE DETAILS] No course found in API response:', res);
         $('#course-details').html('<p class="text-danger text-center">لم يتم العثور على المادة</p>');
       }
     })
     .catch(error => {
-      console.error('Error fetching course details:', error);
+      // LOG: Error fetching course details
+      console.error('[COURSE DETAILS] Error fetching course details:', error);
       $('#course-details').html(`<p class="text-danger text-center">حدث خطأ أثناء جلب البيانات: ${error.message}</p>`);
     });
 });
