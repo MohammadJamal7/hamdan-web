@@ -1580,21 +1580,17 @@ $(document).ready(function () {
         async function getBunnyPlayerHtml() {
           // Try to get Bunny video ID from course data
           let videoId = course.bunnyVideoId;
-          
           // If no bunnyVideoId, try to extract from video URL
           if (!videoId && course.video) {
-            // Extract video ID from URL like: https://vz-543301.b-cdn.net/{videoId}/playlist.m3u8
             const match = course.video.match(/\/([a-f0-9-]+)\/playlist\.m3u8/);
             if (match) {
               videoId = match[1];
             }
           }
-          
           // If we have a Bunny video ID, show Bunny player
           if (videoId) {
             const lastPosition = localStorage.getItem(`course_${courseId}_position`);
             const startTime = lastPosition ? `&start=${Math.floor(lastPosition)}` : '';
-            
             return `
               <div style="position:relative;padding-top:56.25%;width:100%;border-radius:12px;overflow:hidden;background:#000;">
                 <iframe 
@@ -1608,70 +1604,8 @@ $(document).ready(function () {
               </div>
             `;
           }
-          
-          // Fallback: If no Bunny video, try Mux (commented for later use)
-          return await getMuxPlayerHtml();
-        }
-        
-        async function getMuxPlayerHtml() {
-          // ===== MUX PLAYER CODE (ENABLED) =====
-          if (playbackId) {
-            // Fetch tokens from backend
-            const tokenEndpoints = [
-              { attr: 'playback-token', url: `${window.API_BASE_URL}/mux/playback-token?playbackId=${playbackId}` },
-              { attr: 'drm-token', url: `${window.API_BASE_URL}/mux/drm-token?playbackId=${playbackId}` },
-              { attr: 'thumbnail-token', url: `${window.API_BASE_URL}/mux/thumbnail-token?playbackId=${playbackId}` },
-              { attr: 'storyboard-token', url: `${window.API_BASE_URL}/mux/storyboard-token?playbackId=${playbackId}` },
-            ];
-            const headers = { Authorization: `Bearer ${token}` };
-            const tokenFetches = tokenEndpoints.map(e => fetch(e.url, { headers }).then(r => r.json()));
-            const tokens = await Promise.all(tokenFetches);
-
-            // Add mobile-specific attributes for better playback
-            let mobileAttrs = window.isMobile ? 'preload="auto" playsinline="true"' : '';
-
-            // Add Widevine L3 compatibility attributes for Android tablets
-            let l3Attrs = '';
-            if (window.isWidevineL3Device) {
-              l3Attrs = 'max-resolution="480p" prefer-mse="true"';
-              enhancedDebugLog('WIDEVINE_L3', 'Configuring player for Widevine L3 compatibility', {
-                playbackId: playbackId,
-                playbackPolicy: playbackPolicy
-              });
-            }
-
-            let attrs = `playback-id="${playbackId}" style="width:100%;aspect-ratio:16/9;background:#000;border-radius:12px;" metadata-title="${course.title}" metadata-description="${course.description || ''}" stream-type="on-demand" controls ${mobileAttrs} ${l3Attrs}`;
-            if (playbackPolicy === 'drm') {
-              if (tokens[0].success && tokens[0].token) attrs += ` playback-token="${tokens[0].token}"`;
-              if (tokens[1].success && tokens[1].token) attrs += ` drm-token="${tokens[1].token}"`;
-            } else if (playbackPolicy === 'signed') {
-              if (tokens[0].success && tokens[0].token) attrs += ` playback-token="${tokens[0].token}"`;
-            } else if (playbackPolicy === 'public') {
-              // No token needed
-            } else if (Array.isArray(course.playback_ids) && course.playback_ids[0]?.policy && course.playback_ids.length > 1) {
-              if (tokens[0].success && tokens[0].token) attrs += ` playback-token="${tokens[0].token}"`;
-            }
-
-            // Add storyboard token if available
-            if (tokens[3].success && tokens[3].token) {
-              attrs += ` storyboard-token="${tokens[3].token}"`;
-            }
-
-            // Add thumbnail token if available
-            if (tokens[2].success && tokens[2].token) {
-              attrs += ` thumbnail-token="${tokens[2].token}"`;
-            }
-
-            // Add continue watching functionality
-            const lastPosition = localStorage.getItem(`course_${courseId}_position`);
-            if (lastPosition) {
-              attrs += ` start-time="${lastPosition}"`;
-            }
-
-            return `<mux-player id="muxPlayer" ${attrs}></mux-player>`;
-          } else {
-            return '<div class="alert alert-warning">لا يوجد فيديو متاح لهذه المادة</div>';
-          }
+          // No Bunny video available
+          return `<div class='alert alert-warning text-center'>لا يوجد فيديو لهذه المادة حاليا.</div>`;
         }
         
         // Get platform icon
