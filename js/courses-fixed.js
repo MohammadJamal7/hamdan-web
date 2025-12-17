@@ -84,7 +84,7 @@ async function loadCourses(playlistId) {
         
         // Fetch courses from API
         const token = localStorage.getItem('token');
-        const response = await fetch(`https://api.hamdan.help/api/playlist/${playlistId}/courses`, {
+        const response = await fetch(`http://localhost:3000/api/playlist/${playlistId}/courses`, {
             headers: {
                 'Authorization': `Bearer ${token}`
             }
