@@ -108,29 +108,23 @@ async function loadCourses(playlistId) {
             // Filter out locked courses - only show unlocked courses
             const unlockedCourses = data.data.filter(course => !course.isLocked);
 
-            // Filter to show only Bunny courses
-            const bunnyCourses = unlockedCourses.filter(course =>
-                course.bunnyVideoId ||
-                (course.video && (course.video.includes('b-cdn.net') || course.video.includes('vz-')))
-            );
-
-            if (bunnyCourses.length === 0) {
+            if (unlockedCourses.length === 0) {
                 coursesContainer.innerHTML = '<div class="text-center py-3"><p class="text-muted">لا توجد مواد متاحة في هذه القائمة</p></div>';
                 return;
             }
 
             // Sort courses by order field (ascending)
-            const sortedCourses = bunnyCourses.sort((a, b) => {
+            const sortedCourses = unlockedCourses.sort((a, b) => {
                 const orderA = a.order || 0;
                 const orderB = b.order || 0;
                 return orderA - orderB;
             });
-            console.log("Sorted unlocked Bunny courses (ascending order):", sortedCourses);
+            console.log("Sorted unlocked courses (ascending order):", sortedCourses);
 
-            // Display courses with original order numbers, but in reversed display order
-            for (let i = sortedCourses.length - 1; i >= 0; i--) {
+            // Display courses in ascending order
+            for (let i = 0; i < sortedCourses.length; i++) {
                 const course = sortedCourses[i];
-                const orderNumber = course.order || (i + 1); // Use original index for order number
+                const orderNumber = course.order || (i + 1); // Use original order number
                 const courseHtml = `
                     <div class="card mb-3 course-card" style="border-left: 4px solid #007bff;">
                         <div class="card-body">
