@@ -1,6 +1,15 @@
 // Courses JavaScript for Hamdan Web App
 
+let coursesLoaded = false; // Flag to prevent duplicate loads
+
 document.addEventListener('DOMContentLoaded', function() {
+    // Prevent duplicate execution
+    if (coursesLoaded) {
+        console.warn('Courses already loaded, skipping duplicate load');
+        return;
+    }
+    coursesLoaded = true;
+    
     // Check if user is logged in
     const token = localStorage.getItem('token');
     if (!token) {
@@ -122,6 +131,7 @@ async function loadCourses(playlistId) {
             console.log("Sorted unlocked courses (ascending order):", sortedCourses);
 
             // Display courses in ascending order
+            let coursesHtml = '';
             for (let i = 0; i < sortedCourses.length; i++) {
                 const course = sortedCourses[i];
                 const orderNumber = course.order || (i + 1); // Use original order number
@@ -152,8 +162,11 @@ async function loadCourses(playlistId) {
                     </div>
                 `;
                 
-                coursesContainer.innerHTML += courseHtml;
+                coursesHtml += courseHtml;
             }
+            
+            // Set all HTML at once instead of appending incrementally
+            coursesContainer.innerHTML = coursesHtml;
         } else {
             // No courses found
             coursesContainer.innerHTML = '<div class="text-center py-3"><p class="text-muted">لا توجد مواد في هذه القائمة</p></div>';
