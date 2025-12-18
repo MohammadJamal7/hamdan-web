@@ -109,6 +109,7 @@ async function loadCourses(playlistId) {
         
         const data = await response.json();
         console.log('Courses response:', data);
+        console.log(`Total courses from API: ${data.data?.length || 0}`);
         
         if (data.success && data.data && data.data.length > 0) {
             // Clear loading state
@@ -116,14 +117,27 @@ async function loadCourses(playlistId) {
             
             // Filter out locked courses - only show unlocked courses
             const unlockedCourses = data.data.filter(course => !course.isLocked);
+            console.log(`Unlocked courses: ${unlockedCourses.length}`);
+            
+            // Remove duplicate courses (same ID appearing multiple times)
+            const seenIds = new Set();
+            const uniqueCourses = unlockedCourses.filter(course => {
+                if (seenIds.has(course.id)) {
+                    console.warn(`Duplicate course detected: ${course.id} (${course.title})`);
+                    return false;
+                }
+                seenIds.add(course.id);
+                return true;
+            });
+            console.log(`Unique courses after deduplication: ${uniqueCourses.length}`);
 
-            if (unlockedCourses.length === 0) {
+            if (uniqueCourses.length === 0) {
                 coursesContainer.innerHTML = '<div class="text-center py-3"><p class="text-muted">لا توجد مواد متاحة في هذه القائمة</p></div>';
                 return;
             }
 
             // Sort courses by order field (ascending)
-            const sortedCourses = unlockedCourses.sort((a, b) => {
+            const sortedCourses = uniqueCourses.sort((a, b) => {
                 const orderA = a.order || 0;
                 const orderB = b.order || 0;
                 return orderA - orderB;
