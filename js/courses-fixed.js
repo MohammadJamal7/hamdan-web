@@ -119,9 +119,17 @@ async function loadCourses(playlistId) {
             const unlockedCourses = data.data.filter(course => !course.isLocked);
             console.log(`Unlocked courses: ${unlockedCourses.length}`);
             
+            // Filter to show only Bunny courses (have bunnyVideoId or Bunny video URL)
+            const bunnyCourses = unlockedCourses.filter(course => {
+                const hasBunnyVideoId = !!course.bunnyVideoId;
+                const hasBunnyUrl = course.video && (course.video.includes('b-cdn.net') || course.video.includes('vz-'));
+                return hasBunnyVideoId || hasBunnyUrl;
+            });
+            console.log(`Bunny courses: ${bunnyCourses.length}`);
+            
             // Remove duplicate courses (same ID appearing multiple times)
             const seenIds = new Set();
-            const uniqueCourses = unlockedCourses.filter(course => {
+            const uniqueCourses = bunnyCourses.filter(course => {
                 if (seenIds.has(course.id)) {
                     console.warn(`Duplicate course detected: ${course.id} (${course.title})`);
                     return false;
@@ -129,7 +137,7 @@ async function loadCourses(playlistId) {
                 seenIds.add(course.id);
                 return true;
             });
-            console.log(`Unique courses after deduplication: ${uniqueCourses.length}`);
+            console.log(`Unique Bunny courses after deduplication: ${uniqueCourses.length}`);
 
             if (uniqueCourses.length === 0) {
                 coursesContainer.innerHTML = '<div class="text-center py-3"><p class="text-muted">لا توجد مواد متاحة في هذه القائمة</p></div>';
