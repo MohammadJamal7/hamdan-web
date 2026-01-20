@@ -1643,6 +1643,30 @@ $(document).ready(function () {
           return 'fas fa-link'; // Default icon
         }
         // Render course details in a two-column layout (right: title+video, left: details)
+        let videoSectionHtml = '';
+        if (course.isLocked) {
+          videoSectionHtml = `
+            <div class="course-video-container mb-4 d-flex align-items-center justify-content-center" style="min-height:180px;">
+              <div class="text-center w-100">
+                <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
+                <div class="fw-bold fs-5 mb-2">الفيديو مقفل</div>
+                <div class="text-muted">يجب فتح المادة لمشاهدة الفيديو.</div>
+              </div>
+            </div>
+          `;
+        } else {
+          videoSectionHtml = `
+            <div class="course-video-container mb-4">
+              <div id="mux-player-container">
+                <div class="loading-spinner">
+                  <div class="spinner-border text-primary" role="status">
+                    <span class="visually-hidden">جاري التحميل...</span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          `;
+        }
         const courseDetailsHtml = `
           <div class="course-layout">
             <div class="course-right">
@@ -1652,15 +1676,7 @@ $(document).ready(function () {
                   <span class="course-duration">${course.duration || 'مدة غير محددة'}</span>
                 </div>
               </div>
-              <div class="course-video-container mb-4">
-                <div id="mux-player-container">
-                  <div class="loading-spinner">
-                    <div class="spinner-border text-primary" role="status">
-                      <span class="visually-hidden">جاري التحميل...</span>
-                    </div>
-                  </div>
-                </div>
-              </div>
+              ${videoSectionHtml}
             </div>
             <div class="course-left">
               <div class="course-description">
@@ -1676,126 +1692,107 @@ $(document).ready(function () {
         // LOG: Rendered course details HTML
         console.log('[COURSE DETAILS] Rendered courseDetailsHtml:', courseDetailsHtml);
         $('#course-details').html(courseDetailsHtml);
-        // Initialize Bunny Player (or Mux as fallback)
-        getBunnyPlayerHtml().then(html => {
-          // LOG: Bunny player HTML result
-          console.log('[COURSE DETAILS] Bunny player HTML:', html);
-          $('#mux-player-container').html(html);
-          // Check if Bunny player was loaded (iframe exists)
-          const bunnyPlayer = document.querySelector('#bunnyPlayer');
-          if (bunnyPlayer) {
-            // Bunny player loaded successfully
-            enhancedDebugLog('BUNNY', 'Bunny player loaded successfully', { videoId: course.bunnyVideoId });
-            // LOG: Bunny player iframe element
-            console.log('[COURSE DETAILS] Bunny player iframe element:', bunnyPlayer);
-            // Start watching session
-            fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
-              method: 'POST',
-              headers: {
-                'Authorization': `Bearer ${token}`,
-                'Content-Type': 'application/json'
-              }
-            }).catch(err => console.error('Error starting watch session:', err));
-            // For Bunny player, we track watch progress differently
-            // Note: Bunny iframe doesn't expose playback position directly, so we track via timer
-            setInterval(async () => {
-              // Send heartbeat to API for watch history tracking
-              try {
-                await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
-                  method: 'PUT',
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                  },
-                  body: JSON.stringify({
-                    currentPosition: 0, // Bunny iframe doesn't expose position
-                    duration: course.duration || 0
-                  })
-                });
-              } catch (err) {
-                console.error('Error saving watch progress:', err);
-              }
-            }, 10000);
-            // Load questions for this course
-            loadCourseQuestions(courseId);
-          } else {
-            // LOG: Bunny player not found, fallback to Mux
-            console.log('[COURSE DETAILS] Bunny player not found, fallback to Mux.');
-            // Wait for Mux Player to be defined (fallback)
-            const checkMuxInterval = setInterval(() => {
-              if (document.querySelector('mux-player')) {
-                clearInterval(checkMuxInterval);
-                // Get reference to the player
-                window.muxPlayer = document.querySelector('mux-player');
-                muxPlayer = window.muxPlayer;
-                // LOG: Mux player element found
-                console.log('[COURSE DETAILS] Mux player element found:', muxPlayer);
-                /* ===== MUX PLAYER CONFIGURATION (HIDDEN FOR LATER USE) =====
-                // Configure player for Widevine L3 devices
-                if (window.isWidevineL3Device && muxPlayer) {
-                  try {
-                    // Configure adaptive bitrate to allow SD renditions
-                    muxPlayer.configure({
-                      abr: {
-                        restrictions: {
-                          maxHeight: 480, // Allow SD for L3 devices
-                          maxWidth: 854   // 480p width
-                        }
-                      }
-                    });
-                    enhancedDebugLog('WIDEVINE_L3', 'Applied ABR restrictions for L3 device', {
-                      maxHeight: 480,
-                      maxWidth: 854
-                    });
-                  } catch (error) {
-                    enhancedDebugLog('WIDEVINE_L3', 'Failed to configure ABR restrictions', error);
-                  }
+        // Only initialize video player and questions if course is not locked
+        if (!course.isLocked) {
+          // Initialize Bunny Player (or Mux as fallback)
+          getBunnyPlayerHtml().then(html => {
+            // LOG: Bunny player HTML result
+            console.log('[COURSE DETAILS] Bunny player HTML:', html);
+            $('#mux-player-container').html(html);
+            // Check if Bunny player was loaded (iframe exists)
+            const bunnyPlayer = document.querySelector('#bunnyPlayer');
+            if (bunnyPlayer) {
+              // Bunny player loaded successfully
+              enhancedDebugLog('BUNNY', 'Bunny player loaded successfully', { videoId: course.bunnyVideoId });
+              // LOG: Bunny player iframe element
+              console.log('[COURSE DETAILS] Bunny player iframe element:', bunnyPlayer);
+              // Start watching session
+              fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
+                method: 'POST',
+                headers: {
+                  'Authorization': `Bearer ${token}`,
+                  'Content-Type': 'application/json'
                 }
-                ===== END MUX PLAYER CONFIGURATION (HIDDEN) ===== */
-                // Start watching session
-                fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
-                  method: 'POST',
-                  headers: {
-                    'Authorization': `Bearer ${token}`,
-                    'Content-Type': 'application/json'
-                  }
-                }).catch(err => console.error('Error starting watch session:', err));
-                // Save playback position every 10 seconds and send to API
-                if (muxPlayer) {
-                  setInterval(async () => {
-                    if (muxPlayer && typeof muxPlayer.currentTime === 'number' && typeof muxPlayer.duration === 'number') {
-                      const currentTime = muxPlayer.currentTime;
-                      const duration = muxPlayer.duration;
-                      if (currentTime > 0 && duration > 0) {
-                        // Save to localStorage for continue watching
-                        localStorage.setItem(`course_${courseId}_position`, currentTime);
-                        // Send to API for watch history tracking
-                        try {
-                          await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
-                            method: 'PUT',
-                            headers: {
-                              'Authorization': `Bearer ${token}`,
-                              'Content-Type': 'application/json'
-                            },
-                            body: JSON.stringify({
-                              currentPosition: currentTime,
-                              duration: duration
-                            })
-                          });
-                        } catch (err) {
-                          console.error('Error saving watch progress:', err);
-                        }
-                      }
+              }).catch(err => console.error('Error starting watch session:', err));
+              // For Bunny player, we track watch progress differently
+              // Note: Bunny iframe doesn't expose playback position directly, so we track via timer
+              setInterval(async () => {
+                // Send heartbeat to API for watch history tracking
+                try {
+                  await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
+                    method: 'PUT',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                      currentPosition: 0, // Bunny iframe doesn't expose position
+                      duration: course.duration || 0
+                    })
+                  });
+                } catch (err) {
+                  console.error('Error saving watch progress:', err);
+                }
+              }, 10000);
+              // Load questions for this course
+              loadCourseQuestions(courseId);
+            } else {
+              // LOG: Bunny player not found, fallback to Mux
+              console.log('[COURSE DETAILS] Bunny player not found, fallback to Mux.');
+              // Wait for Mux Player to be defined (fallback)
+              const checkMuxInterval = setInterval(() => {
+                if (document.querySelector('mux-player')) {
+                  clearInterval(checkMuxInterval);
+                  // Get reference to the player
+                  window.muxPlayer = document.querySelector('mux-player');
+                  muxPlayer = window.muxPlayer;
+                  // LOG: Mux player element found
+                  console.log('[COURSE DETAILS] Mux player element found:', muxPlayer);
+                  // Start watching session
+                  fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
+                    method: 'POST',
+                    headers: {
+                      'Authorization': `Bearer ${token}`,
+                      'Content-Type': 'application/json'
                     }
-                  }, 10000);
-                  // Load questions for this course
-                  loadCourseQuestions(courseId);
+                  }).catch(err => console.error('Error starting watch session:', err));
+                  // Save playback position every 10 seconds and send to API
+                  if (muxPlayer) {
+                    setInterval(async () => {
+                      if (muxPlayer && typeof muxPlayer.currentTime === 'number' && typeof muxPlayer.duration === 'number') {
+                        const currentTime = muxPlayer.currentTime;
+                        const duration = muxPlayer.duration;
+                        if (currentTime > 0 && duration > 0) {
+                          // Save to localStorage for continue watching
+                          localStorage.setItem(`course_${courseId}_position`, currentTime);
+                          // Send to API for watch history tracking
+                          try {
+                            await fetch(`${window.API_BASE_URL}/courses/${courseId}/watch`, {
+                              method: 'PUT',
+                              headers: {
+                                'Authorization': `Bearer ${token}`,
+                                'Content-Type': 'application/json'
+                              },
+                              body: JSON.stringify({
+                                currentPosition: currentTime,
+                                duration: duration
+                              })
+                            });
+                          } catch (err) {
+                            console.error('Error saving watch progress:', err);
+                          }
+                        }
+                      }
+                    }, 10000);
+                    // Load questions for this course
+                    loadCourseQuestions(courseId);
+                  }
                 }
-              }
-            }, 100);
-            setTimeout(() => clearInterval(checkMuxInterval), 2000);
-          }
-        });
+              }, 100);
+              setTimeout(() => clearInterval(checkMuxInterval), 2000);
+            }
+          });
+        }
       } else {
         // LOG: No course found in API response
         console.log('[COURSE DETAILS] No course found in API response:', res);
