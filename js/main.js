@@ -1,7 +1,8 @@
 // Main JavaScript for Hamdan Web App
 
 // Base API URL - Update this to your actual API URL
-const API_BASE_URL = 'https://api.hamdan.help/api'; // Production API URL
+ const API_BASE_URL = 'https://api.hamdan.help/api'; // Production API URL
+ //const API_BASE_URL = 'http://localhost:3000/api'; // development API URL
 
 // Check if user is logged in
 function checkAuth() {
@@ -162,6 +163,44 @@ function showToast(message, type = 'success') {
     });
 }
 
+// Periodic token validity check - detect force logout immediately
+function startTokenValidationCheck() {
+    // Check token validity every 30 seconds
+    setInterval(async function() {
+        const token = localStorage.getItem('token');
+        
+        // Only check if user is logged in and not on auth pages
+        if (!token || window.location.pathname.includes('index.html') || window.location.pathname.includes('register.html')) {
+            return;
+        }
+        
+        try {
+            // Make a simple API call to check if token is still valid
+            const response = await fetch(`${API_BASE_URL}/profile`, {
+                method: 'GET',
+                headers: {
+                    'Authorization': `Bearer ${token}`,
+                    'Content-Type': 'application/json'
+                }
+            });
+            
+            // If we get 401, token has been revoked - logout immediately
+            if (response.status === 401) {
+                console.log('🔴 Token has been revoked - Force logout detected!');
+                localStorage.removeItem('token');
+                localStorage.removeItem('user');
+                showToast('انتهت صلاحية جلستك. تم تسجيل خروجك.', 'danger');
+                setTimeout(() => {
+                    window.location.href = 'index.html';
+                }, 1500);
+            }
+        } catch (error) {
+            // Silently ignore network errors - don't want to spam logs
+            console.debug('Token validation check failed (network):', error.message);
+        }
+    }, 30000); // Check every 30 seconds
+}
+
 // Document ready
 $(document).ready(function() {
     // Check authentication
@@ -169,6 +208,9 @@ $(document).ready(function() {
 
     // Setup password toggles
     setupPasswordToggles();
+    
+    // Start periodic token validation (detects force logout)
+    startTokenValidationCheck();
 
     // Logout button handler
     $('#logoutBtn').on('click', function() {
