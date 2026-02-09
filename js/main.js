@@ -165,8 +165,8 @@ function showToast(message, type = 'success') {
 
 // Periodic token validity check - detect force logout immediately
 function startTokenValidationCheck() {
-    // Check token validity every 30 seconds
-    setInterval(async function() {
+    // Function to validate token
+    async function validateToken() {
         const token = localStorage.getItem('token');
         
         // Only check if user is logged in and not on auth pages
@@ -175,6 +175,8 @@ function startTokenValidationCheck() {
         }
         
         try {
+            console.log('🔍 Validating token...');
+            
             // Make a simple API call to check if token is still valid
             const response = await fetch(`${API_BASE_URL}/profile`, {
                 method: 'GET',
@@ -183,6 +185,8 @@ function startTokenValidationCheck() {
                     'Content-Type': 'application/json'
                 }
             });
+            
+            console.log('✓ Token validation response:', response.status);
             
             // If we get 401, token has been revoked - logout immediately
             if (response.status === 401) {
@@ -198,7 +202,13 @@ function startTokenValidationCheck() {
             // Silently ignore network errors - don't want to spam logs
             console.debug('Token validation check failed (network):', error.message);
         }
-    }, 30000); // Check every 30 seconds
+    }
+    
+    // Check immediately on page load
+    validateToken();
+    
+    // Then check every 10 seconds
+    setInterval(validateToken, 10000);
 }
 
 // Document ready
