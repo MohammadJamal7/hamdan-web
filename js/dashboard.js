@@ -17,11 +17,17 @@ async function loadUserData() {
         const user = JSON.parse(localStorage.getItem('user'));
 
         if (user) {
-            // Update user name and profile picture in the navbar
-            $('.navbar .text-white.me-2').text(user.name);
+            // Update user name and profile picture in the navbar if elements exist
+            const nameElement = $('.navbar .text-white.me-2');
+            if (nameElement.length > 0) {
+                nameElement.text(user.name);
+            }
 
             if (user.image) {
-                $('.navbar img[alt="Profile"]').attr('src', user.image);
+                const profileImg = $('.navbar img[alt="Profile"]');
+                if (profileImg.length > 0) {
+                    profileImg.attr('src', user.image);
+                }
             }
         }
     } catch (error) {
