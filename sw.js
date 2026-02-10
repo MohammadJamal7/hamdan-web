@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2.1.2'; // Updated version to include true/false question enhancements
+const CACHE_VERSION = 'v2.1.3'; // Updated to force refresh with main.js in all pages
 const APP_CACHE = `hamdan-app-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `hamdan-runtime-${CACHE_VERSION}`;
 
@@ -11,6 +11,12 @@ const PRECACHE_URLS = [
   './offline.html',
   './css/style.css',
   './js/pwa.js',
+  './js/main.js',
+  './js/profile.js',
+  './js/courses-fixed.js',
+  './js/playlists.js',
+  './js/edit-profile.js',
+  './js/notifications-improved.js',
   './images/logo.png',
   './images/logo_192.png',
   './images/logo_512.png'
