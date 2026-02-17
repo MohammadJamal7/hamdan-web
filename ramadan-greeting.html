@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1976d2">
+    <link rel="manifest" href="manifest.json">
+    <link rel="icon" href="images/logo.png" type="image/png">
+    <title>تهنئة رمضان - حمدان</title>
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        .ramadan-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        .template-display {
+            position: relative;
+            width: 100%;
+            max-width: 500px;
+            margin: 20px auto;
+            background: linear-gradient(135deg, #1a472a 0%, #2d5f3f 50%, #1a472a 100%);
+            border-radius: 20px;
+            padding: 20px;
+            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+        }
+
+        .canvas-wrapper {
+            position: relative;
+            width: 100%;
+            margin-bottom: 20px;
+        }
+
+        canvas {
+            width: 100%;
+            height: auto;
+            border-radius: 15px;
+            display: block;
+        }
+
+        .input-section {
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px;
+            border-radius: 15px;
+            margin-bottom: 20px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group label {
+            font-weight: 600;
+            color: #004052;
+            margin-bottom: 10px;
+            display: block;
+        }
+
+        .form-control {
+            border: 2px solid #e0e7ef;
+            border-radius: 10px;
+            padding: 12px 15px;
+            font-size: 16px;
+            transition: all 0.3s ease;
+            text-align: right;
+        }
+
+        .form-control option {
+            direction: rtl;
+            padding: 10px;
+            text-align: right;
+        }
+
+        .form-control:focus {
+            border-color: #004052;
+            box-shadow: 0 0 0 0.2rem rgba(0, 64, 82, 0.25);
+        }
+
+        .button-section {
+            display: flex;
+            gap: 10px;
+            margin-top: 25px;
+            flex-wrap: wrap;
+        }
+
+        .btn-custom {
+            flex: 1;
+            min-width: 150px;
+            padding: 12px 20px;
+            font-weight: 600;
+            border-radius: 10px;
+            transition: all 0.3s ease;
+            border: none;
+            cursor: pointer;
+        }
+
+        .btn-download {
+            background: linear-gradient(135deg, #004052 0%, #006b7f 100%);
+            color: white;
+        }
+
+        .btn-download:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 64, 82, 0.4);
+            color: white;
+        }
+
+        .section-title {
+            color: #004052;
+            font-weight: 700;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .ramadan-icon {
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+
+
+        .success-message {
+            background: linear-gradient(135deg, #28a745 0%, #20c997 100%);
+            color: white;
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 15px;
+            display: none;
+            animation: slideIn 0.3s ease;
+        }
+
+        @keyframes slideIn {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .navbar {
+            background: linear-gradient(135deg, #004052 0%, #006b7f 100%) !important;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        .card-header {
+            background: linear-gradient(135deg, #004052 0%, #006b7f 100%);
+            color: white;
+            border: none;
+            padding: 20px;
+            border-radius: 15px 15px 0 0;
+        }
+    </style>
+</head>
+<body>
+    <!-- Top Navigation Bar -->
+    <nav class="navbar navbar-expand-lg navbar-dark">
+        <div class="container">
+            <div class="d-flex justify-content-between w-100 align-items-center">
+                <!-- Back Button -->
+                <a href="dashboard.html" class="text-white">
+                    <i class="fas fa-arrow-right fa-lg"></i>
+                </a>
+
+                <!-- Title -->
+                <h5 class="mb-0">تهنئة رمضان</h5>
+
+                <!-- Home Icon -->
+                <a href="dashboard.html" class="text-white">
+                    <i class="fas fa-home fa-lg"></i>
+                </a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="ramadan-container">
+        <!-- Success Message -->
+        <div class="success-message" id="successMessage">
+            <i class="fas fa-check-circle"></i> تم حفظ الصورة بنجاح!
+        </div>
+
+        <!-- Input Section -->
+        <div class="input-section">
+            <div class="section-title">
+                <i class="fas fa-crescent-moon ramadan-icon"></i>
+                أنشئ تهنئتك الشخصية
+            </div>
+            
+            <form id="greetingForm">
+                <div class="form-group">
+                    <label for="greetingSelect">اختر عبارة التهنئة:</label>
+                    <select class="form-control" id="greetingSelect" required>
+                        <option value="">-- اختر عبارة التهنئة --</option>
+                        <option value="greeting1">نتمنى لكم شهرًا مباركًا.. مليئًا بالخير والطمأنينة وقبول الأعمال</option>
+                        <option value="greeting2">شهر مبارك، تقبّل الله منا ومنكم صالح الأعمال</option>
+                        <option value="greeting3">صومًا مقبولًا وذنبًا مغفوراً</option>
+                        <option value="greeting4">كل عام وأنتم بألف خير</option>
+                        <option value="greeting5">رمضان كريم 🌙</option>
+                        <option value="greeting6">تقبل الله منا ومنكم</option>
+                        <option value="greeting7">عسى أن يكون رمضان شهر خير وبركة</option>
+                        <option value="greeting8">في شهر الرحمة والغفران</option>
+                        <option value="greeting9">أهلا وسهلا برمضان</option>
+                    </select>
+                </div>
+
+                <div class="form-group">
+                    <label for="userName">اسمك الكامل:</label>
+                    <input 
+                        type="text" 
+                        class="form-control" 
+                        id="userName" 
+                        placeholder="أدخل اسمك هنا"
+                        maxlength="30"
+                        required
+                    >
+                </div>
+
+
+            </form>
+        </div>
+
+        <!-- Template Display Section -->
+        <div class="template-display">
+            <h6 class="section-title text-white mb-3">
+                <i class="fas fa-image"></i> معاينة
+            </h6>
+            <div class="canvas-wrapper">
+                <canvas id="greetingCanvas"></canvas>
+            </div>
+        </div>
+
+        <!-- Action Buttons -->
+        <div class="button-section">
+            <button class="btn-custom btn-download" id="downloadBtn">
+                <i class="fas fa-download"></i> تحميل الصورة
+            </button>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="js/pwa.js" defer></script>
+    <script src="js/ramadan-greeting.js" defer></script>
+</body>
+</html>
