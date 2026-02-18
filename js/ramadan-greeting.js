@@ -35,23 +35,29 @@ class RamadanGreetingCard {
             let greetingsEnabled = true;
             if (settingsData.success && settingsData.data) {
                 this.settings = settingsData.data;
-                console.log('[Ramadan Greeting] Settings loaded:', {
+                console.log('[Ramadan Greeting] Settings loaded from backend:', {
                     isActive: this.settings.isActive,
                     userNameColor: this.settings.userNameColor,
                     userNameFont: this.settings.userNameFont,
                     userNameFontSize: this.settings.userNameFontSize,
                     hasTemplates: this.settings.templates?.length || 0
                 });
-                // If admin disabled greetings, set greetingsEnabled to false
+                
+                // Explicitly check if greetings are disabled
                 if (this.settings.isActive === false) {
                     greetingsEnabled = false;
-                    console.log('[Ramadan Greeting] Greetings are disabled by admin');
+                    console.log('[Ramadan Greeting] ⚠️ GREETINGS DISABLED BY ADMIN - Service is not active');
+                } else {
+                    console.log('[Ramadan Greeting] ✓ Greetings ENABLED - Service is active');
                 }
+            } else {
+                console.warn('[Ramadan Greeting] No settings data received, using defaults');
+                this.settings = this.getDefaultSettings();
             }
 
-            // Only populate greetings if enabled
+            // Only populate greetings if enabled and data is available
             if (greetingsEnabled && greetingsData.success && greetingsData.data && greetingsData.data.length > 0) {
-                console.log('[Ramadan Greeting] Populating greetings:', greetingsData.data.length);
+                console.log('[Ramadan Greeting] Populating greetings dropdown with', greetingsData.data.length, 'greetings');
                 // Convert greetings array to object for dropdown
                 this.greetings = {};
                 greetingsData.data.forEach((greeting, index) => {
@@ -60,7 +66,10 @@ class RamadanGreetingCard {
                 this.populateGreetingDropdown();
                 this.enableGreetingInput();
             } else {
-                console.log('[Ramadan Greeting] Greetings disabled, hiding dropdown');
+                console.warn('[Ramadan Greeting] Greetings NOT available:', {
+                    greetingsEnabled: greetingsEnabled,
+                    hasData: greetingsData.success && greetingsData.data?.length > 0
+                });
                 // Hide greeting phrase dropdown if greetings are disabled
                 this.hideGreetingDropdown();
             }
@@ -95,6 +104,8 @@ class RamadanGreetingCard {
     }
 
     hideGreetingDropdown() {
+        console.log('[Ramadan Greeting] Hiding greeting dropdown - service disabled by admin');
+        
         // Hide the greeting phrase dropdown and label
         const greetingSelect = document.getElementById('greetingSelect');
         if (greetingSelect) {
@@ -104,13 +115,23 @@ class RamadanGreetingCard {
             if (greetingGroup) {
                 greetingGroup.style.display = 'none';
                 greetingGroup.setAttribute('data-greetings-disabled', 'true');
+                console.log('[Ramadan Greeting] Greeting form group hidden');
             }
         }
         // Also clear any selected greeting
         this.selectedGreeting = '';
+        
+        // Remove required attribute from name input since greeting is optional
+        const userNameInput = document.getElementById('userName');
+        if (userNameInput) {
+            userNameInput.removeAttribute('required');
+            console.log('[Ramadan Greeting] Removed required from userName input');
+        }
     }
 
     enableGreetingInput() {
+        console.log('[Ramadan Greeting] Enabling greeting input - service enabled in admin');
+        
         // Enable the greeting phrase dropdown
         const greetingSelect = document.getElementById('greetingSelect');
         if (greetingSelect) {
@@ -120,7 +141,15 @@ class RamadanGreetingCard {
             if (greetingGroup) {
                 greetingGroup.style.display = '';
                 greetingGroup.removeAttribute('data-greetings-disabled');
+                console.log('[Ramadan Greeting] Greeting form group shown');
             }
+        }
+        
+        // Ensure name input has required attribute
+        const userNameInput = document.getElementById('userName');
+        if (userNameInput && !userNameInput.hasAttribute('required')) {
+            userNameInput.setAttribute('required', 'required');
+            console.log('[Ramadan Greeting] Added required to userName input');
         }
     }
 
@@ -463,12 +492,15 @@ class RamadanGreetingCard {
     }
 
     downloadImage() {
-        // Only require greeting if greetings are enabled
-        const greetingsEnabled = this.settings && this.settings.isActive !== false;
-        if (greetingsEnabled && !this.selectedGreeting.trim()) {
-            alert('الرجاء اختيار عبارة التهنئة أولاً');
-            return;
-        }
+        // Check if greetings are enabled in admin settings
+        const greetingsEnabled = this.settings && this.settings.isActive === true;
+        
+        console.log('[Ramadan Greeting] Download attempt:', {
+            greetingsEnabled: greetingsEnabled,
+            isActive: this.settings?.isActive,
+            selectedGreeting: this.selectedGreeting,
+            userName: this.userName
+        });
 
         try {
             // Attempt blob-based download
