@@ -338,22 +338,23 @@ class RamadanGreetingCard {
     }
 
     setupEventListeners() {
-        // Clear name input on page load to prevent auto-fill
         const userNameInput = document.getElementById('userName');
+        
         if (userNameInput) {
+            // Clear name input on page load to prevent auto-fill
             userNameInput.value = '';
             this.userName = '';
+            
+            // Handle input changes
+            userNameInput.addEventListener('input', (e) => {
+                this.userName = e.target.value;
+                this.drawGreeting();
+            });
         }
 
         // Greeting selection
         document.getElementById('greetingSelect').addEventListener('change', (e) => {
             this.selectedGreeting = this.greetings[e.target.value] || '';
-            this.drawGreeting();
-        });
-
-        // User name input
-        document.getElementById('userName').addEventListener('input', (e) => {
-            this.userName = e.target.value;
             this.drawGreeting();
         });
 
