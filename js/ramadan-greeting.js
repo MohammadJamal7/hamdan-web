@@ -5,16 +5,121 @@ class RamadanGreetingCard {
         this.ctx = this.canvas.getContext('2d');
         this.userName = '';
         this.selectedGreeting = '';
+        this.selectedTemplateId = null; // Store selected template ID
         this.baseImage = null;
         this.imageLoaded = false;
+        this.greetings = {};
+        this.templates = []; // Store all templates
+        this.settings = null;
         
-        // Greeting color - brown tone
-        this.textColor = '#7a461f';
-        // Kuwait Kufi font or Arabic fonts
-        this.arabicFont = "'Traditional Arabic', 'Segoe UI', 'Courier New', monospace";
+        // API Configuration
+        this.apiBase = 'https://api.hamdan.help/api';
+        //this.apiBase = 'http://localhost:3000/api';
         
-        // Ramadan greetings
-        this.greetings = {
+        // Load data from backend
+        this.loadData();
+    }
+
+    async loadData() {
+        try {
+            // Load greetings and settings in parallel
+            const [greetingsResponse, settingsResponse] = await Promise.all([
+                fetch(`${this.apiBase}/ramadan/greetings`),
+                fetch(`${this.apiBase}/ramadan/settings`)
+            ]);
+
+            const greetingsData = await greetingsResponse.json();
+            const settingsData = await settingsResponse.json();
+
+            let greetingsEnabled = true;
+            if (settingsData.success && settingsData.data) {
+                this.settings = settingsData.data;
+                if (this.settings.isActive === false) {
+                    greetingsEnabled = false;
+                }
+            }
+
+            if (greetingsEnabled && greetingsData.success && greetingsData.data) {
+                // Convert greetings array to object for dropdown
+                this.greetings = {};
+                greetingsData.data.forEach((greeting, index) => {
+                    this.greetings[`greeting${index + 1}`] = greeting.text;
+                });
+                this.populateGreetingDropdown();
+            } else {
+                // Hide greeting phrase dropdown if greetings are disabled
+                this.hideGreetingDropdown();
+            }
+
+            if (this.settings && this.settings.templates && this.settings.templates.length > 0) {
+                this.templates = this.settings.templates;
+                // Set the first template as selected by default
+                this.selectedTemplateId = this.templates[0]._id;
+                this.populateTemplateDropdown();
+            } else if (this.settings) {
+                // Use defaults
+                this.templates = this.settings.templates;
+                this.selectedTemplateId = this.templates[0]._id;
+                this.populateTemplateDropdown();
+            }
+
+            // Now load the template image
+            this.loadBaseImage();
+            this.setupEventListeners();
+        } catch (error) {
+            console.error('Error loading data from backend:', error);
+            // Fallback to defaults
+            this.settings = this.getDefaultSettings();
+            this.greetings = this.getDefaultGreetings();
+            this.templates = this.settings.templates;
+            this.selectedTemplateId = this.templates[0]._id;
+            this.populateGreetingDropdown();
+            this.populateTemplateDropdown();
+            this.loadBaseImage();
+            this.setupEventListeners();
+        }
+    }
+
+    hideGreetingDropdown() {
+        // Hide the greeting phrase dropdown and label
+        const greetingGroup = document.getElementById('greetingSelect')?.closest('.form-group');
+        if (greetingGroup) {
+            greetingGroup.style.display = 'none';
+        }
+        // Also clear any selected greeting
+        this.selectedGreeting = '';
+    }
+
+    hideGreetingUI() {
+        // Hide the main container or show a message
+        const container = document.querySelector('.ramadan-container');
+        if (container) {
+            container.innerHTML = '<div class="alert alert-warning text-center mt-5">تهنئة رمضان غير متاحة حالياً.</div>';
+        }
+    }
+
+    getDefaultSettings() {
+        return {
+            templates: [{
+                _id: 'default',
+                url: 'images/temp.png',
+                name: 'Default Template'
+            }],
+            activeTemplateId: 'default',
+            greetingFont: 'Traditional Arabic',
+            greetingFontSize: 28,
+            greetingColor: '#7a461f',
+            userNameFont: 'Traditional Arabic',
+            userNameFontSize: 24,
+            userNameColor: '#004052',
+            greetingPositionX: 85,
+            greetingPositionY: 52,
+            isActive: true
+        };
+    }
+
+    getDefaultGreetings() {
+        return {
             greeting1: 'نتمنى لكم شهرًا مباركًا.. مليئًا بالخير والطمأنينة وقبول الأعمال',
             greeting2: 'شهر مبارك، تقبّل الله منا ومنكم صالح الأعمال',
             greeting3: 'صومًا مقبولًا وذنبًا مغفوراً',
@@ -25,18 +130,94 @@ class RamadanGreetingCard {
             greeting8: 'رمضان مبارك، أعاده الله عليكم بالخير واليمن والبركات',
             greeting9: 'أهلا وسهلا برمضان'
         };
+    }
+
+    populateGreetingDropdown() {
+        const select = document.getElementById('greetingSelect');
+        if (!select) return;
+
+        // Clear existing options except the first one
+        while (select.options.length > 1) {
+            select.remove(1);
+        }
+
+        // Add greetings from backend
+        Object.entries(this.greetings).forEach(([key, value]) => {
+            const option = document.createElement('option');
+            option.value = key;
+            option.text = value;
+            select.appendChild(option);
+        });
+    }
+
+    populateTemplateDropdown() {
+        const container = document.getElementById('templateCards');
+        if (!container) return;
+
+        container.innerHTML = '';
+
+        // Add templates as cards
+        if (this.templates && this.templates.length > 0) {
+            this.templates.forEach(template => {
+                const card = document.createElement('div');
+                card.className = 'template-card' + (template._id === this.selectedTemplateId ? ' active' : '');
+                card.innerHTML = `
+                    <img src="${this.getAbsoluteImageUrl(template.url)}" alt="${template.name}" loading="lazy">
+                    <div class="template-name">${template.name || 'Template'}</div>
+                `;
+                
+                card.addEventListener('click', () => {
+                    this.selectTemplate(template._id);
+                });
+                
+                container.appendChild(card);
+            });
+        }
+    }
+
+    getAbsoluteImageUrl(url) {
+        if (!url.startsWith('/')) return url;
+        return this.apiBase.replace('/api', '') + url;
+    }
+
+    selectTemplate(templateId) {
+        this.selectedTemplateId = templateId;
+        // Update active card styling
+        document.querySelectorAll('.template-card').forEach(card => {
+            card.classList.remove('active');
+        });
         
-        // Load the base image
+        // Find and mark the selected card as active
+        const templateCards = document.getElementById('templateCards');
+        if (templateCards) {
+            const cards = templateCards.querySelectorAll('.template-card');
+            const templateIndex = this.templates.findIndex(t => t._id === templateId);
+            if (templateIndex >= 0 && cards[templateIndex]) {
+                cards[templateIndex].classList.add('active');
+            }
+        }
+        
         this.loadBaseImage();
-        
-        // Initialize event listeners
-        this.setupEventListeners();
     }
 
     loadBaseImage() {
         const img = new Image();
+        
+        // Get the selected template
+        let imageUrl = 'images/temp.png';
+        if (this.templates && this.selectedTemplateId) {
+            const selectedTemplate = this.templates.find(t => t._id === this.selectedTemplateId);
+            if (selectedTemplate && selectedTemplate.url) {
+                imageUrl = selectedTemplate.url;
+                // Convert relative URL to absolute API URL
+                if (imageUrl.startsWith('/')) {
+                    imageUrl = this.apiBase.replace('/api', '') + imageUrl;
+                }
+            }
+        }
+        
         // Add cache-busting parameter to force reload
-        img.src = 'images/temp.png?' + new Date().getTime();
+        img.src = imageUrl + (imageUrl.includes('?') ? '&' : '?') + 't=' + new Date().getTime();
         
         img.onload = () => {
             this.baseImage = img;
@@ -51,7 +232,7 @@ class RamadanGreetingCard {
         };
 
         img.onerror = () => {
-            console.error('Failed to load base image');
+            console.error('Failed to load base image:', img.src);
             this.imageLoaded = false;
             alert('فشل تحميل الصورة الأساسية');
         };
@@ -116,60 +297,76 @@ class RamadanGreetingCard {
     }
 
     drawTextOverlay(width, height) {
+        // Only draw greeting text if enabled and selected
         if (this.selectedGreeting) {
             this.drawGreetingText(width, height);
         }
-        
+        // Always allow user name
         if (this.userName) {
             this.drawUserNameSmall(width, height);
         }
     }
 
     drawGreetingText(width, height) {
-        // Move both greeting and name just a little lower
-        const slightlyLowerY = height * 0.52; // Slightly below center
-        const rightX = width * 0.85;
+        if (!this.settings) return;
+
+        // Use position from settings
+        const positionX = (this.settings.greetingPositionX || 85) / 100;
+        const positionY = (this.settings.greetingPositionY || 52) / 100;
+        
+        const textX = width * positionX;
+        const textY = height * positionY;
 
         // Split long greetings into multiple lines
         const maxCharsPerLine = 20;
         const lines = this.splitArabicText(this.selectedGreeting, maxCharsPerLine);
 
-        this.ctx.font = "bold 28px 'Traditional Arabic', 'Kufi Arabic', serif";
-        this.ctx.textAlign = 'right';
+        const fontSize = this.settings.greetingFontSize || 28;
+        const fontFamily = this.settings.greetingFont || 'Traditional Arabic';
+        
+        this.ctx.font = `bold ${fontSize}px '${fontFamily}', 'Kufi Arabic', serif`;
+        this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillStyle = '#7a461f'; // Greeting color
+        this.ctx.fillStyle = this.settings.greetingColor || '#7a461f';
         this.ctx.shadowColor = 'rgba(255, 255, 255, 0.5)';
         this.ctx.shadowBlur = 8;
         this.ctx.shadowOffsetX = 1;
         this.ctx.shadowOffsetY = 1;
 
-        const lineHeight = 38;
+        const lineHeight = fontSize + 10;
         const totalHeight = (lines.length - 1) * lineHeight;
-        const startY = slightlyLowerY - totalHeight;
+        const startY = textY - totalHeight / 2;
 
         lines.forEach((line, index) => {
-            this.ctx.fillText(line, rightX, startY + (index * lineHeight));
+            this.ctx.fillText(line, textX, startY + (index * lineHeight));
         });
 
         this.ctx.shadowColor = 'transparent';
     }
 
     drawUserNameSmall(width, height) {
-        // Place user name just below the greeting
-        const rightX = width * 0.85;
-        const nameY = height * 0.52 + 38; // Just below greeting
+        if (!this.settings) return;
 
-        this.ctx.font = "italic 24px 'Traditional Arabic', 'Kufi Arabic', serif";
-        this.ctx.textAlign = 'right';
+        const positionX = (this.settings.greetingPositionX || 85) / 100;
+        const positionY = (this.settings.greetingPositionY || 52) / 100;
+
+        const textX = width * positionX;
+        const nameY = height * positionY + 50;
+
+        const fontSize = this.settings.userNameFontSize || 24;
+        const fontFamily = this.settings.userNameFont || 'Traditional Arabic';
+
+        this.ctx.font = `italic ${fontSize}px '${fontFamily}', 'Kufi Arabic', serif`;
+        this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillStyle = '#004052'; // User name color (old dark blue)
+        this.ctx.fillStyle = this.settings.userNameColor || '#004052';
         this.ctx.globalAlpha = 0.95;
         this.ctx.shadowColor = 'rgba(255, 255, 255, 0.4)';
         this.ctx.shadowBlur = 6;
         this.ctx.shadowOffsetX = 1;
         this.ctx.shadowOffsetY = 1;
 
-        this.ctx.fillText(this.userName, rightX, nameY);
+        this.ctx.fillText(this.userName, textX, nameY);
 
         this.ctx.shadowColor = 'transparent';
         this.ctx.globalAlpha = 1;
@@ -199,7 +396,9 @@ class RamadanGreetingCard {
     }
 
     downloadImage() {
-        if (!this.selectedGreeting.trim()) {
+        // Only require greeting if greetings are enabled
+        const greetingsEnabled = this.settings && this.settings.isActive !== false;
+        if (greetingsEnabled && !this.selectedGreeting.trim()) {
             alert('الرجاء اختيار عبارة التهنئة أولاً');
             return;
         }
