@@ -202,6 +202,8 @@ class RamadanGreetingCard {
 
     loadBaseImage() {
         const img = new Image();
+        // Allow cross-origin image loading
+        img.crossOrigin = 'anonymous';
         
         // Get the selected template
         let imageUrl = 'images/temp.png';
@@ -234,7 +236,19 @@ class RamadanGreetingCard {
         img.onerror = () => {
             console.error('Failed to load base image:', img.src);
             this.imageLoaded = false;
-            alert('فشل تحميل الصورة الأساسية');
+            // Try loading local default image on error
+            const localImg = new Image();
+            localImg.src = 'images/temp.png';
+            localImg.crossOrigin = 'anonymous';
+            localImg.onload = () => {
+                this.baseImage = localImg;
+                this.imageLoaded = true;
+                this.resizeCanvas();
+                this.drawGreeting();
+            };
+            localImg.onerror = () => {
+                alert('فشل تحميل الصورة الأساسية');
+            };
         };
     }
 
@@ -403,13 +417,46 @@ class RamadanGreetingCard {
             return;
         }
 
-        const link = document.createElement('a');
-        link.href = this.canvas.toDataURL('image/png');
-        link.download = `تهنئة_رمضان_${this.userName || 'بدون_اسم'}.png`;
-        link.click();
-
-        // Show success message
-        this.showSuccessMessage();
+        try {
+            // Attempt blob-based download
+            this.canvas.toBlob(
+                (blob) => {
+                    if (!blob) {
+                        throw new Error('Failed to create blob from canvas');
+                    }
+                    const blobUrl = URL.createObjectURL(blob);
+                    const link = document.createElement('a');
+                    link.href = blobUrl;
+                    link.download = `تهنئة_رمضان_${this.userName || 'بدون_اسم'}.png`;
+                    document.body.appendChild(link);
+                    link.click();
+                    document.body.removeChild(link);
+                    
+                    // Show success message
+                    this.showSuccessMessage();
+                    
+                    // Clean up the blob URL
+                    setTimeout(() => URL.revokeObjectURL(blobUrl), 100);
+                },
+                'image/png',
+                0.95
+            );
+        } catch (error) {
+            console.error('Canvas to blob error:', error);
+            // Fallback: try data URL approach
+            try {
+                const link = document.createElement('a');
+                link.href = this.canvas.toDataURL('image/png');
+                link.download = `تهنئة_رمضان_${this.userName || 'بدون_اسم'}.png`;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                this.showSuccessMessage();
+            } catch (fallbackError) {
+                console.error('Fallback download error:', fallbackError);
+                alert('عذراً، لا يمكن تحميل الصورة. الرجاء استخدام متصفح آخر أو جرب لاحقاً.');
+            }
+        }
     }
 
     showSuccessMessage() {
