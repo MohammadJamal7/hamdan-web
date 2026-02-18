@@ -31,22 +31,36 @@ class RamadanGreetingCard {
             const greetingsData = await greetingsResponse.json();
             const settingsData = await settingsResponse.json();
 
+            // Check if greetings are enabled in admin settings
             let greetingsEnabled = true;
             if (settingsData.success && settingsData.data) {
                 this.settings = settingsData.data;
+                console.log('[Ramadan Greeting] Settings loaded:', {
+                    isActive: this.settings.isActive,
+                    userNameColor: this.settings.userNameColor,
+                    userNameFont: this.settings.userNameFont,
+                    userNameFontSize: this.settings.userNameFontSize,
+                    hasTemplates: this.settings.templates?.length || 0
+                });
+                // If admin disabled greetings, set greetingsEnabled to false
                 if (this.settings.isActive === false) {
                     greetingsEnabled = false;
+                    console.log('[Ramadan Greeting] Greetings are disabled by admin');
                 }
             }
 
-            if (greetingsEnabled && greetingsData.success && greetingsData.data) {
+            // Only populate greetings if enabled
+            if (greetingsEnabled && greetingsData.success && greetingsData.data && greetingsData.data.length > 0) {
+                console.log('[Ramadan Greeting] Populating greetings:', greetingsData.data.length);
                 // Convert greetings array to object for dropdown
                 this.greetings = {};
                 greetingsData.data.forEach((greeting, index) => {
                     this.greetings[`greeting${index + 1}`] = greeting.text;
                 });
                 this.populateGreetingDropdown();
+                this.enableGreetingInput();
             } else {
+                console.log('[Ramadan Greeting] Greetings disabled, hiding dropdown');
                 // Hide greeting phrase dropdown if greetings are disabled
                 this.hideGreetingDropdown();
             }
@@ -82,12 +96,32 @@ class RamadanGreetingCard {
 
     hideGreetingDropdown() {
         // Hide the greeting phrase dropdown and label
-        const greetingGroup = document.getElementById('greetingSelect')?.closest('.form-group');
-        if (greetingGroup) {
-            greetingGroup.style.display = 'none';
+        const greetingSelect = document.getElementById('greetingSelect');
+        if (greetingSelect) {
+            greetingSelect.disabled = true;
+            greetingSelect.setAttribute('data-greetings-disabled', 'true');
+            const greetingGroup = greetingSelect.closest('.form-group');
+            if (greetingGroup) {
+                greetingGroup.style.display = 'none';
+                greetingGroup.setAttribute('data-greetings-disabled', 'true');
+            }
         }
         // Also clear any selected greeting
         this.selectedGreeting = '';
+    }
+
+    enableGreetingInput() {
+        // Enable the greeting phrase dropdown
+        const greetingSelect = document.getElementById('greetingSelect');
+        if (greetingSelect) {
+            greetingSelect.disabled = false;
+            greetingSelect.removeAttribute('data-greetings-disabled');
+            const greetingGroup = greetingSelect.closest('.form-group');
+            if (greetingGroup) {
+                greetingGroup.style.display = '';
+                greetingGroup.removeAttribute('data-greetings-disabled');
+            }
+        }
     }
 
     hideGreetingUI() {
@@ -275,6 +309,13 @@ class RamadanGreetingCard {
     }
 
     setupEventListeners() {
+        // Clear name input on page load to prevent auto-fill
+        const userNameInput = document.getElementById('userName');
+        if (userNameInput) {
+            userNameInput.value = '';
+            this.userName = '';
+        }
+
         // Greeting selection
         document.getElementById('greetingSelect').addEventListener('change', (e) => {
             this.selectedGreeting = this.greetings[e.target.value] || '';
@@ -359,7 +400,10 @@ class RamadanGreetingCard {
     }
 
     drawUserNameSmall(width, height) {
-        if (!this.settings) return;
+        if (!this.settings) {
+            console.warn('[Ramadan Greeting] No settings available for username drawing');
+            return;
+        }
 
         const positionX = (this.settings.greetingPositionX || 85) / 100;
         const positionY = (this.settings.greetingPositionY || 52) / 100;
@@ -369,11 +413,20 @@ class RamadanGreetingCard {
 
         const fontSize = this.settings.userNameFontSize || 24;
         const fontFamily = this.settings.userNameFont || 'Traditional Arabic';
+        const userColor = this.settings.userNameColor || '#004052';
+
+        console.log('[Ramadan Greeting] Drawing username:', {
+            userName: this.userName,
+            color: userColor,
+            font: fontFamily,
+            fontSize: fontSize,
+            position: { x: textX, y: nameY }
+        });
 
         this.ctx.font = `italic ${fontSize}px '${fontFamily}', 'Kufi Arabic', serif`;
         this.ctx.textAlign = 'center';
         this.ctx.textBaseline = 'middle';
-        this.ctx.fillStyle = this.settings.userNameColor || '#004052';
+        this.ctx.fillStyle = userColor;
         this.ctx.globalAlpha = 0.95;
         this.ctx.shadowColor = 'rgba(255, 255, 255, 0.4)';
         this.ctx.shadowBlur = 6;
