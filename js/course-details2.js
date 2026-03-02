@@ -1643,15 +1643,18 @@ $(document).ready(function () {
           return 'fas fa-link'; // Default icon
         }
         // Render course details in a two-column layout (right: title+video, left: details)
+        // When course is locked we hide the entire video/player container
+        // and show a compact note instead (so the page layout doesn't reserve
+        // the large player card space for locked content).
         let videoSectionHtml = '';
+        let lockNoteHtml = '';
         if (course.isLocked) {
-          videoSectionHtml = `
-            <div class="course-video-container mb-4 d-flex align-items-center justify-content-center" style="min-height:180px;">
-              <div class="text-center w-100">
-                <i class="fas fa-lock fa-3x text-secondary mb-3"></i>
-                <div class="fw-bold fs-5 mb-2">الفيديو مقفل</div>
-                <div class="text-muted">يجب فتح المادة لمشاهدة الفيديو.</div>
-              </div>
+          // Remove the player/card entirely
+          videoSectionHtml = '';
+          // Small note to inform the user the video is locked
+          lockNoteHtml = `
+            <div id="videoLockedNote" class="alert alert-warning text-center mb-3" role="alert">
+              <i class="fas fa-lock me-2"></i> الفيديو مقفل — يجب فتح المادة لمشاهدة الفيديو.
             </div>
           `;
         } else {
@@ -1679,6 +1682,7 @@ $(document).ready(function () {
               ${videoSectionHtml}
             </div>
             <div class="course-left">
+              ${lockNoteHtml}
               <div class="course-description">
                 <h3>وصف المادة</h3>
                 <div class="description-content">

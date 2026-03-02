@@ -208,12 +208,14 @@ function createCategoryElement(category, shouldBeOpen = false) {
     container.className = 'category-wrapper';
     container.setAttribute('data-category-id', category.id);
     
-    // Show all courses regardless of locked/unlocked status
-    const visibleCourses = category.courses || [];
-    
+    // Only show unlocked course cards on the courses page
+    const allCourses = category.courses || [];
+    const visibleCourses = allCourses.filter(c => !c.isLocked);
+
     console.log(`[CREATE CATEGORY] Category: ${category.title} (isDefault: ${category.isDefault})`, {
-        totalCourses: visibleCourses.length,
-        courses: visibleCourses.map(c => ({
+        totalCourses: allCourses.length,
+        visibleCourseCount: visibleCourses.length,
+        courses: allCourses.map(c => ({
             id: c.id,
             title: c.title,
             isLocked: c.isLocked,
@@ -266,7 +268,7 @@ function createCategoryElement(category, shouldBeOpen = false) {
     if (visibleCourses.length === 0) {
         coursesContainer.innerHTML = '<p class="text-muted text-center py-3">لا توجد مواد متاحة</p>';
     } else {
-        // Render courses
+        // Render only unlocked (visible) courses
         visibleCourses.forEach((course, index) => {
             const courseCard = createCourseCard(course, index);
             coursesContainer.appendChild(courseCard);
