@@ -1,5 +1,14 @@
 /* Main Styles for Hamdan Web App */
 
+/* Custom Hayah font */
+@font-face {
+    font-family: 'Hayah';
+    src: url('../fonts/66Hayah.otf') format('opentype');
+    font-weight: normal;
+    font-style: normal;
+    font-display: swap;
+}
+
 :root {
     --primary-color: #004052;
     --secondary-color: #f8f9fa;
@@ -13,7 +22,7 @@
 
 /* General Styles */
 body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
     background: linear-gradient(135deg, #f5f7fa 60%, #e0e7ef 100%);
     padding-bottom: 70px; /* Space for bottom navigation */

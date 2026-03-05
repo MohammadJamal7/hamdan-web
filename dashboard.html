@@ -13,10 +13,37 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <style>
+        @font-face {
+            font-family: 'Hayah';
+            src: url('fonts/66Hayah.otf') format('opentype');
+            font-weight: normal;
+        }
+        .custom-gradient-navbar {
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+        }
+            font-style: normal;
+            font-display: swap;
+        }
+        body {
+            font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.25rem;
+            direction: rtl;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+            border: none !important;
+            color: #fff !important;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+            color: #fff !important;
+        }
+    </style>
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark custom-gradient-navbar">
         <div class="container">
             <div class="d-flex justify-content-between w-100 align-items-center">
                 <!-- Notifications Icon -->
@@ -29,8 +56,8 @@
 
                 <!-- Right side - Actions -->
                 <div class="d-flex align-items-center gap-2">
-                    <button id="installBtnNav" class="btn btn-sm btn-outline-light d-none" title="تثبيت التطبيق">
-                        <i class="fas fa-download"></i> تثبيت
+                    <button id="installBtnNav" class="btn btn-sm btn-outline-light d-none" title="ثبت التطبيق">
+                        <i class="fas fa-download"></i> ثبت التطبيق
                     </button>
                     <!-- Phone Icon -->
                     <a href="http://t.me/hamdan2S" class="text-white">
@@ -45,7 +72,7 @@
     <div class="container mt-4 mb-5 pb-5">
         <!-- My Materials Section -->
         <section class="my-materials mb-4">
-            <h5 class="section-title mb-3">المواد الخاصة فيني</h5>
+            <h5 class="section-title mb-3">موادك</h5>
 
             <div class="row">
                 <!-- Course Card -->
@@ -54,8 +81,8 @@
                         <div class="card-body">
                             <div class="d-flex justify-content-between">
                                 <div>
-                                    <h6 class="card-title">عنوان المادة</h6>
-                                    <p class="card-text text-muted small">وصف المادة</p>
+                                    <h6 class="card-title">اسم المادة</h6>
+                                    <p class="card-text text-muted small">شرح بسيط عن المادة</p>
                                 </div>
                                 <div class="text-end">
                                     <span class="badge bg-primary">جديد</span>

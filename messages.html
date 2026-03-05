@@ -14,6 +14,31 @@
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
     <style>
+        @font-face {
+            font-family: 'Hayah';
+            src: url('fonts/66Hayah.otf') format('opentype');
+            font-weight: normal;
+        }
+        .custom-gradient-navbar {
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+        }
+            font-style: normal;
+            font-display: swap;
+        }
+        body {
+            font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.25rem;
+            direction: rtl;
+        }
+        .btn-primary {
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+            border: none !important;
+            color: #fff !important;
+        }
+        .btn-primary:hover {
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+            color: #fff !important;
+        }
         /* Chat Container */
         .chat-container {
             height: calc(100vh - 200px);
@@ -348,7 +373,7 @@
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+    <nav class="navbar navbar-expand-lg navbar-dark custom-gradient-navbar">
         <div class="container">
             <div class="d-flex justify-content-between w-100 align-items-center">
                 <!-- Notifications Icon -->

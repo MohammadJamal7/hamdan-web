@@ -15,6 +15,21 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="css/style.css">
+    <style>
+      @font-face {
+        font-family: 'Hayah';
+        src: url('fonts/66Hayah.otf') format('opentype');
+        font-weight: normal;
+        font-style: normal;
+        font-display: swap;
+      }
+      body {
+        font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      }
+      .custom-gradient-navbar {
+        background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+      }
+    </style>
     <!-- hls.js for playing .m3u8 -->
     <script src="https://cdn.jsdelivr.net/npm/hls.js@latest"></script>
     <!-- Mux Player Script -->
@@ -22,7 +37,7 @@
 </head>
 <body class="bg-light">
     <!-- Back Navigation -->
-    <nav class="navbar navbar-dark bg-primary">
+    <nav class="navbar navbar-dark custom-gradient-navbar">
         <div class="container d-flex justify-content-between align-items-center">
             <a href="javascript:history.back()" class="text-white">
                 <i class="fas fa-arrow-right"></i>

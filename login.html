@@ -9,8 +9,20 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @font-face {
+            font-family: 'Hayah';
+            src: url('fonts/66Hayah.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.25rem;
+        }
+    </style>
+    <style>
+        body {
             background-color: #f5f7fa;
             min-height: 100vh;
             display: flex;
@@ -43,14 +55,15 @@
             border-radius: 8px;
         }
         .btn-primary {
-            background-color: #004052;
-            border-color: #004052;
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%);
+            border: none;
             border-radius: 8px;
             padding: 10px;
+            color: #fff;
         }
         .btn-primary:hover {
-            background-color: #003040;
-            border-color: #003040;
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%);
+            color: #fff;
         }
         /* Toast Styles */
         .toast-container {
@@ -109,21 +122,18 @@
             <div class="col-md-6 col-lg-5">
                 <div class="login-container text-center">
                     <!-- Logo -->
-                    <div class="logo-container mb-4">
-                        <img src="images/logo.png" alt="حمدان" class="img-fluid" style="max-width: 120px;">
+                    <div class="logo-container mb-0">
+                        <img src="images/logo.jpeg" alt="حمدان" class="img-fluid" style="max-width: 290px;">
                     </div>
 
-                    <!-- App Name -->
-                    <h2 class="app-name mb-3">حـــمـــــدان</h2>
-
                     <!-- Login Header -->
-                    <h4 class="login-header mb-4">تسجيل الدخول</h4>
+                    <h4 class="login-header mb-4 mt-0">تسجيل الدخول</h4>
 
                     <!-- Login Form -->
                     <form id="loginForm" class="text-end">
                         <!-- Email/Username Field -->
                         <div class="form-group mb-3">
-                            <label for="identifier" class="form-label small text-muted">أدخل البريد الإلكتروني أو اسم المستخدم</label>
+                            <label for="identifier" class="form-label small text-muted w-100 text-center">حط البريد الإلكتروني أو اسم المستخدم</label>
                             <input 
                                 type="text" 
                                 class="form-control" 
@@ -137,7 +147,7 @@
 
                         <!-- Password Field -->
                         <div class="form-group mb-3">
-                            <label for="password" class="form-label small text-muted">كلمة المرور</label>
+                            <label for="password" class="form-label small text-muted w-100 text-center">كلمة المرور</label>
                             <div class="input-group">
                                 <input 
                                     type="password" 
@@ -155,11 +165,10 @@
                         </div>
 
                         <!-- Remember Me -->
-                        <div class="form-check mb-3">
-                            <input class="form-check-input" type="checkbox" id="rememberMe">
-                            <label class="form-check-label" for="rememberMe">
-                                تذكرني
-                            </label>
+                        <div class="form-check mb-3" style="text-align: right; direction: rtl; width: 100%; padding-right: 0; margin-right: 0;">
+                            <input class="form-check-input" type="checkbox" id="rememberMe" style="margin-right:0; margin-left:6px; float:right;">
+                            <label class="form-check-label mb-0" for="rememberMe" style="float:right; padding-right:0; margin-right:0;">تذكر يوزري وكلمة السر عشان ما أنسى</label>
+                            <div style="clear:both;"></div>
                         </div>
 
                         <!-- Error Message -->
@@ -170,14 +179,14 @@
 
                         <!-- Register Link -->
                         <div class="text-center mt-3">
-                            <p>ليس لديك حساب؟ <a href="register.html" class="text-primary">إنشاء حساب جديد</a></p>
+                            <p>ماعندك حساب؟ <a href="register.html" class="text-primary">سوي حساب جديد</a></p>
                         </div>
 
                         <!-- Support Button -->
-                        <div class="support-section mt-4 pt-3 border-top text-center">
-                            <p class="text-muted small mb-2">هل تحتاج مساعدة؟</p>
+                        <div class="support-section mt-1 pt-3 text-center">
+                            <p class="text-muted small mb-2"> تحتاج مساعدة؟</p>
                             <a href="http://t.me/hamdan2S" target="_blank" class="btn btn-outline-primary btn-sm">
-                                <i class="fab fa-telegram me-1"></i> تواصل مع الدعم الفني
+                                <i class="fab fa-telegram me-1" style="color:#229ED9;"></i> تواصل مع فريق الدعم
                             </a>
                         </div>
                     </form>

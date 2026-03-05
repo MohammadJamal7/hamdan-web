@@ -12,10 +12,31 @@
   <link rel="stylesheet" href="css/style.css" />
 
   <style>
+    @font-face {
+      font-family: 'Hayah';
+      src: url('fonts/66Hayah.otf') format('opentype');
+      font-weight: normal;
+      font-style: normal;
+      font-display: swap;
+    }
+    .custom-gradient-navbar {
+      background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+    }
     body {
       background-color: #fff;
       color: #004052;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      font-size: 1.25rem;
+      direction: rtl;
+    }
+    .btn-primary {
+      background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+      border: none !important;
+      color: #fff !important;
+    }
+    .btn-primary:hover {
+      background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+      color: #fff !important;
     }
 
     #notifications-container {
@@ -114,7 +135,7 @@
   </style>
 </head>
 <body>
- <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+ <nav class="navbar navbar-expand-lg navbar-dark custom-gradient-navbar">
         <div class="container">
             <div class="d-flex justify-content-between w-100 align-items-center">
                 <!-- Notifications Icon -->

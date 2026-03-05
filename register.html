@@ -9,13 +9,22 @@
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
+        @font-face {
+            font-family: 'Hayah';
+            src: url('fonts/66Hayah.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
+        }
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.25rem;
             background-color: #f5f7fa;
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
+            direction: rtl;
         }
         .register-container {
             background-color: white;
@@ -41,16 +50,20 @@
         }
         .form-control {
             border-radius: 8px;
+            font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            font-size: 1.25rem;
+            direction: rtl;
         }
         .btn-primary {
-            background-color: #004052;
-            border-color: #004052;
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%);
+            border: none;
             border-radius: 8px;
             padding: 10px;
+            color: #fff;
         }
         .btn-primary:hover {
-            background-color: #003040;
-            border-color: #003040;
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%);
+            color: #fff;
         }
         /* Toast Styles */
         .toast-container {
@@ -93,43 +106,41 @@
             <div class="col-md-6 col-lg-5">
                 <div class="register-container text-center">
                     <!-- Logo -->
-                    <div class="logo-container mb-4">
-                        <img src="images/logo.png" alt="حمدان" class="img-fluid" style="max-width: 120px;">
+                    <div class="logo-container mb-0">
+                        <img src="images/logo.jpeg" alt="حمدان" class="img-fluid" style="max-width: 290px;">
                     </div>
 
-                    <!-- App Name -->
-                    <h2 class="app-name mb-3">حـــمـــــدان</h2>
-
+         
                     <!-- Register Header -->
                     <h4 class="register-header mb-4">تسجيل جديد</h4>
 
                     <!-- Register Form -->
-                    <form id="registerForm" class="text-end">
+                    <form id="registerForm" class="text-end" style="direction: rtl;">
                         <!-- Full Name Fields -->
                         <div class="row">
                             <div class="col-6">
                                 <div class="form-group mb-3">
-                                    <label for="firstName" class="form-label small text-muted">الاسم الأول</label>
-                                    <input type="text" class="form-control" id="firstName" placeholder="الاسم الأول">
+                                    <label for="firstName" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">اسمك الأول</label>
+                                    <input type="text" class="form-control" id="firstName" placeholder="اكتب اسمك الأول" style="direction:rtl;">
                                 </div>
                             </div>
                             <div class="col-6">
                                 <div class="form-group mb-3">
-                                    <label for="lastName" class="form-label small text-muted">اسم العائلة</label>
-                                    <input type="text" class="form-control" id="lastName" placeholder="اسم العائلة">
+                                    <label for="lastName" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">اسم العائلة</label>
+                                    <input type="text" class="form-control" id="lastName" placeholder="اكتب اسم عايلتك" style="direction:rtl;">
                                 </div>
                             </div>
                         </div>
 
                         <!-- Username Field -->
                         <div class="form-group mb-3">
-                            <label for="username" class="form-label small text-muted">اسم المستخدم</label>
-                            <input type="text" class="form-control" id="username" placeholder="اسم المستخدم">
+                            <label for="username" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">اسم المستخدم</label>
+                            <input type="text" class="form-control" id="username" placeholder="اكتب يوزرك" style="direction:rtl;">
                         </div>
 
                         <!-- Email Field -->
                         <div class="form-group mb-3">
-                            <label for="email" class="form-label small text-muted">البريد الإلكتروني</label>
+                            <label for="email" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">الإيميل</label>
                             <input
                                 type="email"
                                 id="email"
@@ -137,18 +148,20 @@
                                 class="form-control"
                                 required
                                 autocomplete="email"
+                                placeholder="اكتب إيميلك"
+                                style="direction:rtl;"
                             />
                         </div>
 
                         <!-- Phone Field -->
                         <div class="form-group mb-3">
-                            <label for="phone" class="form-label small text-muted">رقم الهاتف</label>
-                            <input type="tel" class="form-control" id="phone" placeholder="رقم الهاتف">
+                            <label for="phone" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">رقم الجوال</label>
+                            <input type="tel" class="form-control" id="phone" placeholder="اكتب رقم جوالك" style="direction:rtl;">
                         </div>
 
                         <!-- Password Field -->
                         <div class="form-group mb-3">
-                            <label for="password" class="form-label small text-muted">كلمة المرور</label>
+                            <label for="password" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">كلمة المرور</label>
                             <div class="input-group">
                                 <input
                                     type="password"
@@ -157,6 +170,8 @@
                                     class="form-control"
                                     required
                                     autocomplete="new-password"
+                                    placeholder="حط كلمة مرورك"
+                                    style="direction:rtl;"
                                 />
                                 <button class="btn btn-outline-secondary toggle-password" type="button">
                                     <i class="fa fa-eye-slash"></i>
@@ -166,7 +181,7 @@
 
                         <!-- Confirm Password Field -->
                         <div class="form-group mb-3">
-                            <label for="confirmPassword" class="form-label small text-muted">تأكيد كلمة المرور</label>
+                            <label for="confirmPassword" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;"> اكتب الكلمة مرة ثانية </label>
                             <div class="input-group">
                                 <input
                                     type="password"
@@ -175,6 +190,8 @@
                                     class="form-control"
                                     required
                                     autocomplete="new-password"
+                                    placeholder="أعد كتابة كلمة المرور"
+                                    style="direction:rtl;"
                                 />
                                 <button class="btn btn-outline-secondary toggle-password" type="button">
                                     <i class="fa fa-eye-slash"></i>
@@ -186,11 +203,11 @@
                         <div class="alert alert-danger d-none" id="registerError"></div>
 
                         <!-- Register Button -->
-                        <button type="submit" class="btn btn-primary w-100 mb-3" id="registerButton">التسجيل</button>
+                        <button type="submit" class="btn btn-primary w-100 mb-3" id="registerButton">سجّلني</button>
 
                         <!-- Login Link -->
                         <div class="text-center mt-3">
-                            <p>لديك حساب بالفعل؟ <a href="login.html" class="text-primary">تسجيل الدخول</a></p>
+                            <p>عندك حساب؟ <a href="login.html" class="text-primary">سجّل دخولك</a></p>
                         </div>
                     </form>
                 </div>
