@@ -45,6 +45,20 @@
             position: relative;
             width: 100%;
             margin-bottom: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .canvas-wrapper canvas {
+            max-width: 100%;
+            max-height: 350px;
+            height: auto;
+            width: auto;
+            display: block;
+            border-radius: 12px;
+            box-shadow: 0 2px 12px rgba(0,0,0,0.10);
+        }
         }
 
         <style>
@@ -59,6 +73,12 @@
                 font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             }
             .custom-gradient-navbar {
+                        .navbar .navbar-brand,
+                        .navbar .navbar-title,
+                        .navbar h5,
+                        .navbar .text-dark {
+                            color: #fff !important;
+                        }
                 background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
             }
             /* Autofill detection animation */
@@ -121,7 +141,7 @@
         }
 
         .btn-download {
-            background: linear-gradient(135deg, #004052 0%, #006b7f 100%);
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%);
             color: white;
         }
 
@@ -173,7 +193,6 @@
         }
 
         .navbar {
-            background: linear-gradient(135deg, #004052 0%, #006b7f 100%) !important;
             box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
         }
 
@@ -274,7 +293,7 @@
                 </a>
 
                 <!-- Title -->
-                <h5 class="mb-0">تهنئة رمضان</h5>
+                <h5 class="mb-0 text-white">تهنئة رمضان</h5>
 
                 <!-- Home Icon -->
                 <a href="dashboard.html" class="text-white">
