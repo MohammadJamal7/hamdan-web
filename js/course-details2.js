@@ -1554,6 +1554,25 @@ $(document).ready(function () {
       console.log('[COURSE DETAILS] API response:', res);
       if (res.success && res.data) {
         const course = res.data;
+        
+        // Convert formatted duration string back to seconds if needed
+        if (typeof course.duration === 'string') {
+          const parts = course.duration.split(':').map(p => parseInt(p, 10));
+          if (parts.length === 2) {
+            // MM:SS format
+            course.durationInSeconds = parts[0] * 60 + parts[1];
+          } else if (parts.length === 3) {
+            // HH:MM:SS format
+            course.durationInSeconds = parts[0] * 3600 + parts[1] * 60 + parts[2];
+          } else {
+            course.durationInSeconds = 0;
+          }
+        } else if (typeof course.duration === 'number') {
+          course.durationInSeconds = course.duration;
+        } else {
+          course.durationInSeconds = 0;
+        }
+        
         // LOG: Course object
         console.log('[COURSE DETAILS] Course object:', course);
         // Social media section
@@ -1732,7 +1751,7 @@ $(document).ready(function () {
                     },
                     body: JSON.stringify({
                       currentPosition: 10, // Heartbeat: 10 seconds per heartbeat
-                      duration: course.duration || 0,
+                      duration: course.durationInSeconds || 0, // Use raw duration in seconds
                       isHeartbeat: true // Flag to indicate this is a heartbeat, not actual position
                     })
                   });
@@ -1781,7 +1800,7 @@ $(document).ready(function () {
                               },
                               body: JSON.stringify({
                                 currentPosition: currentTime,
-                                duration: duration,
+                                duration: course.durationInSeconds || duration, // Use raw duration in seconds
                                 isHeartbeat: false // Position-based tracking
                               })
                             });
