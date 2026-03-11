@@ -1719,7 +1719,8 @@ $(document).ready(function () {
                 }
               }).catch(err => console.error('Error starting watch session:', err));
               // For Bunny player, we track watch progress differently
-              // Note: Bunny iframe doesn't expose playback position directly, so we track via timer
+              // Note: Bunny iframe doesn't expose playback position directly, so we track via heartbeat
+              // Send 10 seconds of watch time every 10 seconds as heartbeat
               setInterval(async () => {
                 // Send heartbeat to API for watch history tracking
                 try {
@@ -1730,8 +1731,9 @@ $(document).ready(function () {
                       'Content-Type': 'application/json'
                     },
                     body: JSON.stringify({
-                      currentPosition: 0, // Bunny iframe doesn't expose position
-                      duration: course.duration || 0
+                      currentPosition: 10, // Heartbeat: 10 seconds per heartbeat
+                      duration: course.duration || 0,
+                      isHeartbeat: true // Flag to indicate this is a heartbeat, not actual position
                     })
                   });
                 } catch (err) {
@@ -1779,7 +1781,8 @@ $(document).ready(function () {
                               },
                               body: JSON.stringify({
                                 currentPosition: currentTime,
-                                duration: duration
+                                duration: duration,
+                                isHeartbeat: false // Position-based tracking
                               })
                             });
                           } catch (err) {
