@@ -225,8 +225,8 @@ function createCategoryElement(category, shouldBeOpen = false) {
         }))
     });
     
-    // Skip categories with no courses
-    if (visibleCourses.length === 0) {
+    // Skip categories with no courses (check allCourses, not just visible ones)
+    if (allCourses.length === 0) {
         console.log(`[CREATE CATEGORY] Skipping category with no courses: ${category.title}`);
         container.style.display = 'none';
         return container;
