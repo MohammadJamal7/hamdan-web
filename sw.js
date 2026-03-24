@@ -1,4 +1,4 @@
-const CACHE_VERSION = 'v2.1.3'; // Updated to force refresh with main.js in all pages
+const CACHE_VERSION = 'v2.1.7'; // Updated for dark mode support on playlist-requests page
 const APP_CACHE = `hamdan-app-${CACHE_VERSION}`;
 const RUNTIME_CACHE = `hamdan-runtime-${CACHE_VERSION}`;
 
@@ -13,6 +13,7 @@ const PRECACHE_URLS = [
   './js/pwa.js',
   './js/main.js',
   './js/profile.js',
+  './js/components/top-nav.js',
   './js/courses-fixed.js',
   './js/playlists.js',
   './js/edit-profile.js',

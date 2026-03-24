@@ -4,6 +4,53 @@
  const API_BASE_URL = 'https://api.hamdan.help/api'; // Production API URL
  //const API_BASE_URL = 'http://localhost:3000/api'; // development API URL
 
+// Hide Messages Button from Bottom Navbar
+(function() {
+    function hideMessagesButton() {
+        const messagesLink = document.querySelector('a[href="messages.html"]');
+        if (messagesLink) {
+            messagesLink.style.display = 'none';
+            messagesLink.style.visibility = 'hidden';
+        }
+    }
+    
+    // Run on page load
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', hideMessagesButton);
+    } else {
+        hideMessagesButton();
+    }
+    
+    // Also run with a small delay to catch dynamic content
+    setTimeout(hideMessagesButton, 100);
+})();
+
+// Replace phone icon with الدعم button in top navbar on all pages
+(function() {
+    function replacePhoneWithSupportButton() {
+        const phoneLink = document.querySelector('nav.navbar a[href="http://t.me/hamdan2S"], nav.navbar a[href="https://t.me/hamdan2S"]');
+        if (!phoneLink) return;
+
+        const supportButton = document.createElement('a');
+        supportButton.href = 'https://t.me/hamdan2S';
+        supportButton.target = '_blank';
+        supportButton.rel = 'noopener';
+        supportButton.className = 'btn btn-sm btn-outline-light support-chat-btn';
+        supportButton.textContent = 'التواصل مع الدعم';
+
+        // Replace icon link element with the button
+        phoneLink.replaceWith(supportButton);
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', replacePhoneWithSupportButton);
+    } else {
+        replacePhoneWithSupportButton();
+    }
+
+    setTimeout(replacePhoneWithSupportButton, 100);
+})();
+
 // Check if user is logged in
 function checkAuth() {
     const token = localStorage.getItem('token');

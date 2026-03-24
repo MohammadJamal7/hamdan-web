@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" >
 <head>
     <meta charset="UTF-8" />
     <title>مشاهدة الفيديو</title>
@@ -15,6 +15,9 @@
       href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css"
     />
     <link rel="stylesheet" href="css/style.css">
+    <!-- Theme Manager for Dark Mode -->
+    <script src="js/theme-manager.js"></script>
+    <script src="js/components/top-nav.js"></script>
     <style>
       @font-face {
         font-family: 'Hayah';
@@ -37,15 +40,7 @@
 </head>
 <body class="bg-light">
     <!-- Back Navigation -->
-    <nav class="navbar navbar-dark custom-gradient-navbar">
-        <div class="container d-flex justify-content-between align-items-center">
-            <a href="javascript:history.back()" class="text-white">
-                <i class="fas fa-arrow-right"></i>
-            </a>
-            <h5 class="text-white mb-0">مشاهدة الفيديو</h5>
-            <div></div>
-        </div>
-    </nav>
+    <top-nav back-url="javascript:history.back()" page-title="مشاهدة الفيديو"></top-nav>
 
     <div class="container mt-4">
         <div

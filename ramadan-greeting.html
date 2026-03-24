@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- Theme Manager for Dark Mode -->
+    <script src="js/theme-manager.js"></script>
+    <script src="js/components/top-nav.js"></script>
     <style>
         /* Autofill detection animation */
         @keyframes autofill-hack {
@@ -284,24 +287,7 @@
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark custom-gradient-navbar">
-        <div class="container">
-            <div class="d-flex justify-content-between w-100 align-items-center">
-                <!-- Back Button -->
-                <a href="dashboard.html" class="text-white">
-                    <i class="fas fa-arrow-right fa-lg"></i>
-                </a>
-
-                <!-- Title -->
-                <h5 class="mb-0 text-white">تهنئة رمضان</h5>
-
-                <!-- Home Icon -->
-                <a href="dashboard.html" class="text-white">
-                    <i class="fas fa-home fa-lg"></i>
-                </a>
-            </div>
-        </div>
-    </nav>
+    <top-nav page-title="تهنئة رمضان"></top-nav>
 
     <!-- Main Content -->
     <div class="ramadan-container">

@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- Theme Manager for Dark Mode -->
+    <script src="js/theme-manager.js"></script>
+    <script src="js/components/top-nav.js"></script>
     <style>
         @font-face {
             font-family: 'Hayah';
@@ -434,33 +437,129 @@
                 font-size: 8px;
             }
         }
+
+        /* Dark Mode Playlist Requests Overrides */
+        [data-theme="dark"] .selection-form {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .form-label {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .form-select option {
+            background-color: var(--input-bg);
+            color: var(--text-primary);
+        }
+
+        [data-theme="dark"] .playlist-card {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .playlist-card h6 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .playlist-card small {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .playlist-badge {
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .playlist-card:hover {
+            border-color: var(--primary-color);
+        }
+
+        /* Dark Mode Support for Form Elements */
+        [data-theme="dark"] .form-select {
+            background-color: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--border-color) !important;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.2);
+        }
+
+        [data-theme="dark"] .form-select:focus {
+            background-color: var(--input-bg) !important;
+            color: var(--text-primary) !important;
+            border-color: var(--primary-color) !important;
+            box-shadow: 0 0 0 0.2rem rgba(0, 168, 204, 0.15);
+        }
+
+        [data-theme="dark"] .form-select:disabled {
+            background-color: var(--bg-tertiary) !important;
+            color: var(--text-secondary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .form-select option {
+            background-color: var(--bg-primary) !important;
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .form-label {
+            color: var(--text-primary) !important;
+        }
+
+        /* Dark Mode Support for Selection Form */
+        [data-theme="dark"] .selection-form {
+            background: var(--bg-primary) !important;
+            border-color: var(--border-color) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        /* Dark Mode Support for Playlist Cards */
+        [data-theme="dark"] .playlist-card {
+            background: var(--card-bg) !important;
+            border-color: var(--border-color) !important;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        /* Dark Mode Support for Container */
+        [data-theme="dark"] .playlists-container {
+            background: var(--bg-primary) !important;
+            border-color: var(--border-color) !important;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        [data-theme="dark"] .playlists-header {
+            background: var(--bg-tertiary) !important;
+            border-color: var(--border-color) !important;
+        }
+
+        [data-theme="dark"] .playlists-header h5 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .playlists-body {
+            background: var(--bg-primary) !important;
+        }
+
+        /* Dark Mode Support for Empty/Loading States */
+        [data-theme="dark"] .empty-state,
+        [data-theme="dark"] .loading-state {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .empty-state h5 {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .empty-state i {
+            opacity: 0.6;
+        }
+
+        [data-theme="dark"] body {
+            background: linear-gradient(135deg, var(--bg-secondary) 60%, var(--bg-tertiary) 100%);
+        }
     </style>
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark custom-gradient-navbar">
-        <div class="container">
-            <div class="d-flex justify-content-between w-100 align-items-center">
-                <!-- Notifications Icon -->
-                <a href="notifications.html" class="text-white position-relative">
-                    <i class="fas fa-bell fa-lg"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        .
-                    </span>
-                </a>
-
-                <div class="d-flex align-items-center gap-2">
-                    <button id="installBtnNav" class="btn btn-sm btn-outline-light d-none" title="تثبيت التطبيق">
-                        <i class="fas fa-download"></i> تثبيت
-                    </button>
-                    <!-- Phone Icon -->
-                    <a href="http://t.me/hamdan2S" class="text-white">
-                        <i class="fas fa-phone fa-lg"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <top-nav></top-nav>
 
         <!-- Main Content -->
         <div class="container-fluid mt-4">
@@ -517,7 +616,7 @@
         </div>
 
     <!-- Bottom Navigation -->
-    <nav class="navbar fixed-bottom navbar-light bg-white border-top">
+    <nav class="navbar fixed-bottom border-top">
         <div class="container">
             <div class="d-flex justify-content-around w-100">
                 <a href="dashboard.html" class="nav-link text-center">

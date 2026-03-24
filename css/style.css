@@ -18,15 +18,157 @@
     --success-color: #28a745;
     --border-radius: 8px;
     --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+    
+    /* Light Mode Colors */
+    --bg-primary: #ffffff;
+    --bg-secondary: #f5f7fa;
+    --bg-tertiary: #e0e7ef;
+    --card-bg: rgba(255,255,255,0.85);
+    --text-primary: #333;
+    --text-secondary: #6c757d;
+    --border-color: #e0e7ef;
+    --input-bg: rgba(255,255,255,0.95);
+}
+
+/* Dark Mode Colors */
+[data-theme="dark"] {
+    --primary-color: #00a8cc;
+    --secondary-color: #1a1f2e;
+    --text-color: #e8eaed;
+    --light-text: #a8aeb5;
+    --bg-primary: #0f1419;
+    --bg-secondary: #1a1f2e;
+    --bg-tertiary: #2d3142;
+    --card-bg: #1e2330;
+    --text-primary: #e8eaed;
+    --text-secondary: #a8aeb5;
+    --border-color: #2d3142;
+    --input-bg: #262d3f;
+    --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+}
+
+/* ===== DARK MODE TEXT COLOR OVERRIDES ===== */
+[data-theme="dark"] h1,
+[data-theme="dark"] h2,
+[data-theme="dark"] h3,
+[data-theme="dark"] h4,
+[data-theme="dark"] h5,
+[data-theme="dark"] h6,
+[data-theme="dark"] p,
+[data-theme="dark"] span,
+[data-theme="dark"] a,
+[data-theme="dark"] label,
+[data-theme="dark"] div,
+[data-theme="dark"] li,
+[data-theme="dark"] td,
+[data-theme="dark"] th {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-title {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-text {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .card-body {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .text-muted {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .text-dark {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .badge-light {
+    background-color: var(--bg-tertiary) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .form-label {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .section-title {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .notification-item {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .small {
+    color: var(--text-secondary) !important;
+}
+
+/* Bootstrap Form Controls Dark Mode */
+[data-theme="dark"] .form-control {
+    background-color: var(--input-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .form-select {
+    background-color: var(--input-bg) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .form-control:focus,
+[data-theme="dark"] .form-select:focus {
+    background-color: var(--input-bg) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .form-control::placeholder {
+    color: var(--text-secondary) !important;
+}
+
+/* Bootstrap Alert Dark Mode */
+[data-theme="dark"] .alert {
+    background-color: var(--bg-tertiary) !important;
+    border-color: var(--border-color) !important;
+    color: var(--text-primary) !important;
+}
+
+/* Bootstrap Table Dark Mode */
+[data-theme="dark"] .table {
+    color: var(--text-primary) !important;
+    border-color: var(--border-color) !important;
+}
+
+[data-theme="dark"] .table-striped > tbody > tr:nth-of-type(odd) {
+    background-color: var(--bg-tertiary) !important;
+}
+
+[data-theme="dark"] .table-hover > tbody > tr:hover {
+    background-color: var(--border-color) !important;
 }
 
 /* General Styles */
 body {
     font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     color: var(--text-color);
-    background: linear-gradient(135deg, #f5f7fa 60%, #e0e7ef 100%);
+    background: linear-gradient(135deg, var(--bg-secondary) 60%, var(--bg-tertiary) 100%);
     padding-bottom: 70px; /* Space for bottom navigation */
     font-size: 1.08rem;
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+/* Smooth theme transitions */
+* {
+    transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Disable transitions while theme is switching for instant change */
+html.theme-switching * {
+    transition: none !important;
 }
 
 .container {
@@ -63,8 +205,8 @@ body {
 .card {
     border-radius: 18px;
     box-shadow: 0 4px 16px rgba(0,0,0,0.08), 0 1.5px 4px rgba(0,0,0,0.04);
-    border: none;
-    background: rgba(255,255,255,0.85);
+    border: 1px solid var(--border-color);
+    background: var(--card-bg);
     backdrop-filter: blur(8px);
     transition: box-shadow 0.2s, transform 0.2s;
 }
@@ -94,20 +236,32 @@ body {
 }
 
 input, textarea, select {
-    background: rgba(255,255,255,0.95) !important;
-    border: 1.5px solid #e0e7ef !important;
+    background: var(--input-bg) !important;
+    border: 1.5px solid var(--border-color) !important;
+    color: var(--text-primary) !important;
     box-shadow: 0 1px 3px rgba(0,0,0,0.03);
     padding: 10px 14px;
     font-size: 1.08rem;
 }
 
+input:focus, textarea:focus, select:focus {
+    background: var(--input-bg) !important;
+    border-color: var(--primary-color) !important;
+    color: var(--text-primary) !important;
+    box-shadow: 0 0 0 0.2rem rgba(0, 168, 204, 0.25) !important;
+}
+
+input::placeholder, textarea::placeholder {
+    color: var(--text-secondary) !important;
+}
+
 /* Glassmorphism utility for main cards */
 .glass-card {
-    background: rgba(255,255,255,0.82);
+    background: var(--card-bg);
     box-shadow: 0 8px 32px rgba(0,0,0,0.12);
     backdrop-filter: blur(12px);
     border-radius: 20px;
-    border: 1.5px solid rgba(255,255,255,0.18);
+    border: 1.5px solid var(--border-color);
 }
 
 /* Touch-friendly tap effect */
@@ -148,6 +302,8 @@ input, textarea, select {
 /* Bottom Navigation */
 .navbar.fixed-bottom {
     box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.1);
+    background-color: var(--bg-primary) !important;
+    border-top-color: var(--border-color) !important;
 }
 
 .navbar.fixed-bottom .nav-link {
@@ -163,9 +319,32 @@ input, textarea, select {
     font-size: 1.2rem;
 }
 
+/* Dark Mode - Bottom Navigation */
+[data-theme="dark"] .navbar.fixed-bottom {
+    background-color: var(--bg-primary) !important;
+    border-top-color: var(--border-color) !important;
+    box-shadow: 0 -2px 10px rgba(0, 0, 0, 0.3);
+}
+
+[data-theme="dark"] .navbar.fixed-bottom .nav-link {
+    color: var(--text-secondary) !important;
+}
+
+[data-theme="dark"] .navbar.fixed-bottom .nav-link:hover {
+    color: var(--text-primary) !important;
+}
+
+[data-theme="dark"] .navbar.fixed-bottom .nav-link.active {
+    color: var(--primary-color) !important;
+}
+
+[data-theme="dark"] .navbar.fixed-bottom .nav-link i {
+    color: inherit;
+}
+
 /* Progress Bars */
 .progress {
-    background-color: #e9ecef;
+    background-color: var(--bg-tertiary);
     border-radius: 10px;
 }
 
@@ -192,6 +371,7 @@ input, textarea, select {
 .profile-header img {
     border: 3px solid white;
     box-shadow: var(--box-shadow);
+    background-color: var(--card-bg);
 }
 
 .cursor-pointer {
@@ -209,7 +389,7 @@ input, textarea, select {
 
 /* Course Details */
 .course-thumbnail {
-    background-color: #f8f9fa;
+    background-color: var(--bg-tertiary);
     border-radius: var(--border-radius);
 }
 
@@ -264,11 +444,11 @@ html[dir="rtl"] .ms-3 {
 
 /* Placeholder for images */
 .img-placeholder {
-    background-color: #e9ecef;
+    background-color: var(--bg-tertiary);
     display: flex;
     align-items: center;
     justify-content: center;
-    color: #adb5bd;
+    color: var(--text-secondary);
 }
 
 /* Course Card Styles */
@@ -402,3 +582,44 @@ html[dir="rtl"] .ms-3 {
         background: #ffffff;
     }
 }
+
+/* Hide Messages Button from Bottom Navbar */
+.navbar.fixed-bottom a[href="messages.html"],
+a.nav-link[href="messages.html"] {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    flex: none !important;
+}
+
+/* Hide Ramadan Greeting Card on Dashboard */
+a[href="ramadan-greeting.html"],
+.special-features {
+    display: none !important;
+    visibility: hidden !important;
+    width: 0 !important;
+    height: 0 !important;
+    margin: 0 !important;
+    padding: 0 !important;
+    overflow: hidden !important;
+}
+
+/* Support button style for top navbar */
+.support-chat-btn {
+    font-size: 0.85rem;
+    white-space: nowrap;
+    border-radius: .375rem;
+    min-height: 34px;
+    height: 34px;
+    line-height: 1;
+    display: inline-flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    padding: 0 0.8rem !important;
+    gap: 0.25rem;
+    text-align: center;
+}
+

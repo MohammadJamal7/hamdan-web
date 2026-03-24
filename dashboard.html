@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -13,6 +13,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- Theme Manager for Dark Mode -->
+    <script src="js/theme-manager.js"></script>
+    <script src="js/components/top-nav.js"></script>
     <style>
         @font-face {
             font-family: 'Hayah';
@@ -22,13 +25,20 @@
         .custom-gradient-navbar {
             background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
         }
-            font-style: normal;
-            font-display: swap;
-        }
+
+        /* Ensure Hayah font is used on dashboard */
         body {
             font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             font-size: 1.25rem;
             direction: rtl;
+        }
+
+        @font-face {
+            font-family: 'Hayah';
+            src: url('fonts/66Hayah.otf') format('opentype');
+            font-weight: normal;
+            font-style: normal;
+            font-display: swap;
         }
         .btn-primary {
             background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
@@ -43,30 +53,7 @@
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark custom-gradient-navbar">
-        <div class="container">
-            <div class="d-flex justify-content-between w-100 align-items-center">
-                <!-- Notifications Icon -->
-                <a href="notifications.html" class="text-white position-relative">
-                    <i class="fas fa-bell fa-lg"></i>
-                    <span class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
-                        .
-                    </span>
-                </a>
-
-                <!-- Right side - Actions -->
-                <div class="d-flex align-items-center gap-2">
-                    <button id="installBtnNav" class="btn btn-sm btn-outline-light d-none" title="ثبت التطبيق">
-                        <i class="fas fa-download"></i> ثبت التطبيق
-                    </button>
-                    <!-- Phone Icon -->
-                    <a href="http://t.me/hamdan2S" class="text-white">
-                        <i class="fas fa-phone fa-lg"></i>
-                    </a>
-                </div>
-            </div>
-        </div>
-    </nav>
+    <top-nav></top-nav>
 
     <!-- Main Content -->
     <div class="container mt-4 mb-5 pb-5">
@@ -167,35 +154,11 @@
             </div>
         </section>
 
-        <!-- Special Features Section -->
-        <section class="special-features mb-4">
-            <h5 class="section-title mb-3">ميزات خاصة</h5>
-            
-            <!-- Ramadan Greeting Card -->
-            <div class="col-12 mb-3">
-                <a href="ramadan-greeting.html" style="text-decoration: none;">
-                    <div class="card special-card" style="background: linear-gradient(135deg, #1a472a 0%, #2d5f3f 100%); border: none;">
-                        <div class="card-body">
-                            <div class="d-flex justify-content-between align-items-center">
-                                <div>
-                                    <h6 class="card-title text-white mb-2">
-                                        <i class="fas fa-crescent-moon"></i> تهنئة خاصة
-                                    </h6>
-                                    <p class="card-text text-white-50 small">أنشئ بطاقة تهنئة شخصية في مناسباتك</p>
-                                </div>
-                                <div class="text-white">
-                                    <i class="fas fa-arrow-left fa-lg"></i>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </a>
-            </div>
-        </section>
+
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="navbar fixed-bottom navbar-light bg-white border-top">
+    <nav class="navbar fixed-bottom border-top">
         <div class="container">
             <div class="d-flex justify-content-around w-100">
                 <a href="dashboard.html" class="nav-link active text-center">

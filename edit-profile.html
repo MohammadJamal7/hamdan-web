@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -36,23 +36,13 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- Theme Manager for Dark Mode -->
+    <script src="js/theme-manager.js"></script>
+    <script src="js/components/top-nav.js"></script>
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark custom-gradient-navbar">
-        <div class="container">
-            <div class="d-flex justify-content-between w-100 align-items-center">
-                <!-- Back Button -->
-                <a href="javascript:history.back()" class="text-white">
-                    <i class="fas fa-arrow-right fa-lg"></i>
-                </a>
-                <!-- Page Title -->
-                <h5 class="text-white mb-0">بيانات المستخدم</h5>
-                <!-- Empty space for alignment -->
-                <div style="width: 24px;"></div>
-            </div>
-        </div>
-    </nav>
+    <top-nav back-url="javascript:history.back()" page-title="بيانات المستخدم"></top-nav>
     <!-- Main Content -->
     <div class="container mt-4 mb-5 pb-5">
         <!-- Profile Picture -->
@@ -105,7 +95,7 @@
       </div>
     </div>
     <!-- Bottom Navigation -->
-    <nav class="navbar fixed-bottom navbar-light bg-white border-top">
+    <nav class="navbar fixed-bottom border-top">
         <div class="container">
             <div class="d-flex justify-content-around w-100">
                 <a href="dashboard.html" class="nav-link text-center">

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl" >
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حمدان - عرض الوضع الليلي والفاتح</title>
+    <!-- Bootstrap RTL CSS -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
+    <!-- Font Awesome for icons -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="css/style.css">
+    <style>
+        @font-face {
+            font-family: 'Hayah';
+            src: url('fonts/66Hayah.otf') format('opentype');
+            font-weight: normal;
+        }
+
+        /* ===== DARK MODE VARIABLES ===== */
+        :root {
+            --primary-color: #004052;
+            --secondary-color: #f8f9fa;
+            --text-color: #333;
+            --light-text: #6c757d;
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --border-radius: 8px;
+            --box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            
+            /* Light Mode specific */
+            --bg-primary: #ffffff;
+            --bg-secondary: #f5f7fa;
+            --bg-tertiary: #e0e7ef;
+            --card-bg: rgba(255,255,255,0.85);
+            --text-primary: #333;
+            --text-secondary: #6c757d;
+            --border-color: #e0e7ef;
+            --input-bg: rgba(255,255,255,0.95);
+        }
+
+        [data-theme="dark"] {
+            --primary-color: #00a8cc;
+            --secondary-color: #1a1f2e;
+            --text-color: #e8eaed;
+            --light-text: #a8aeb5;
+            --bg-primary: #0f1419;
+            --bg-secondary: #1a1f2e;
+            --bg-tertiary: #2d3142;
+            --card-bg: #1e2330;
+            --text-primary: #e8eaed;
+            --text-secondary: #a8aeb5;
+            --border-color: #2d3142;
+            --input-bg: #262d3f;
+        }
+
+        /* ===== BASE STYLES ===== */
+        body {
+            font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: var(--bg-secondary);
+            color: var(--text-primary);
+            transition: background-color 0.3s, color 0.3s;
+            font-size: 1.08rem;
+        }
+
+        .container {
+            max-width: 768px;
+        }
+
+        /* ===== NAVBAR ===== */
+        .navbar-demo {
+            background: linear-gradient(90deg, #213f63 0%, #051a23 100%) !important;
+            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+            transition: all 0.3s;
+        }
+
+        [data-theme="dark"] .navbar-demo {
+            background: linear-gradient(90deg, #0a1628 0%, #051a23 100%) !important;
+        }
+
+        .theme-toggle-btn {
+            background: rgba(255,255,255,0.2);
+            border: 1px solid rgba(255,255,255,0.3);
+            color: white;
+            border-radius: 8px;
+            padding: 6px 12px;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-size: 1.1rem;
+        }
+
+        .theme-toggle-btn:hover {
+            background: rgba(255,255,255,0.3);
+            border-color: rgba(255,255,255,0.5);
+        }
+
+        .navbar-brand {
+            color: white !important;
+            font-weight: 600;
+            font-size: 1.3rem;
+        }
+
+        /* ===== CARDS ===== */
+        .card {
+            background-color: var(--card-bg);
+            border-color: var(--border-color);
+            border: 1px solid var(--border-color);
+            box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+            transition: all 0.3s;
+            border-radius: 15px;
+        }
+
+        .card:hover {
+            box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+            transform: translateY(-2px);
+        }
+
+        .card-header {
+            background-color: var(--bg-tertiary);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .card-body {
+            color: var(--text-primary);
+        }
+
+        /* ===== BUTTONS ===== */
+        .btn-primary {
+            background-color: var(--primary-color);
+            border-color: var(--primary-color);
+            color: white;
+            transition: all 0.3s;
+        }
+
+        .btn-primary:hover {
+            background-color: var(--primary-color);
+            opacity: 0.9;
+            transform: translateY(-2px);
+        }
+
+        .btn-secondary {
+            background-color: var(--border-color);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        .btn-outline-primary {
+            color: var(--primary-color);
+            border-color: var(--primary-color);
+        }
+
+        .btn-outline-primary:hover {
+            background-color: var(--primary-color);
+            color: white;
+        }
+
+        /* ===== FORMS ===== */
+        .form-control, .form-select {
+            background-color: var(--input-bg);
+            border-color: var(--border-color);
+            color: var(--text-primary);
+            transition: all 0.3s;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background-color: var(--input-bg);
+            border-color: var(--primary-color);
+            color: var(--text-primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 168, 204, 0.25);
+        }
+
+        .form-control::placeholder {
+            color: var(--text-secondary);
+        }
+
+        .form-label {
+            color: var(--text-primary);
+        }
+
+        /* ===== ALERTS ===== */
+        .alert-success {
+            background-color: rgba(40, 167, 69, 0.1);
+            border-color: #28a745;
+            color: var(--text-primary);
+        }
+
+        .alert-danger {
+            background-color: rgba(220, 53, 69, 0.1);
+            border-color: #dc3545;
+            color: var(--text-primary);
+        }
+
+        .alert-warning {
+            background-color: rgba(255, 193, 7, 0.1);
+            border-color: #ffc107;
+            color: var(--text-primary);
+        }
+
+        .alert-info {
+            background-color: rgba(23, 162, 184, 0.1);
+            border-color: #17a2b8;
+            color: var(--text-primary);
+        }
+
+        /* ===== BADGES ===== */
+        .badge {
+            transition: all 0.3s;
+        }
+
+        .badge-light {
+            background-color: var(--bg-tertiary);
+            color: var(--text-primary);
+        }
+
+        /* ===== TABLES ===== */
+        .table {
+            color: var(--text-primary);
+            border-color: var(--border-color);
+        }
+
+        .table-striped > tbody > tr:nth-of-type(odd) {
+            background-color: var(--bg-tertiary);
+        }
+
+        .table-hover > tbody > tr:hover {
+            background-color: var(--border-color);
+            color: var(--text-primary);
+        }
+
+        /* ===== DEMO SPECIFIC STYLES ===== */
+        .demo-section {
+            margin-bottom: 3rem;
+            padding: 2rem 0;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .demo-section:last-child {
+            border-bottom: none;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: var(--primary-color);
+            margin-bottom: 1.5rem;
+            font-weight: 600;
+        }
+
+        .component-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .component-box {
+            background-color: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .component-box:hover {
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+        }
+
+        .color-swatch {
+            width: 100%;
+            height: 80px;
+            border-radius: 8px;
+            margin-bottom: 0.5rem;
+            border: 1px solid var(--border-color);
+        }
+
+        .color-name {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.3rem;
+        }
+
+        /* ===== PROGRESS BAR ===== */
+        .progress {
+            background-color: var(--bg-tertiary);
+        }
+
+        .progress-bar {
+            background-color: var(--primary-color);
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 768px) {
+            .component-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        /* Smooth transitions */
+        * {
+            transition: background-color 0.3s, color 0.3s, border-color 0.3s;
+        }
+
+        button[data-theme-toggle] {
+            transition: none;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navbar -->
+    <nav class="navbar navbar-dark navbar-demo sticky-top">
+        <div class="container">
+            <span class="navbar-brand">
+                <i class="fas fa-graduation-cap me-2"></i>
+                عرض الوضع الليلي والفاتح
+            </span>
+            <button class="theme-toggle-btn" data-theme-toggle title="تبديل الوضع">
+                <i class="fas fa-moon"></i>
+            </button>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <div class="container mt-5">
+        <!-- Introduction -->
+        <div class="demo-section">
+            <h1 class="section-title">
+                <i class="fas fa-palette me-2"></i>
+                عرض الوضع الليلي والفاتح
+            </h1>
+            <p class="text-muted">
+                اضغط على زر تبديل الوضع في الأعلى لرؤية تحويل الألوان والتصاميم بسلاسة بين الوضع الفاتح والوضع الليلي.
+                هذا المثال يعرض جميع المكونات الرئيسية للموقع.
+            </p>
+        </div>
+
+        <!-- Colors Palette Section -->
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-swatches me-2"></i>
+                نظام الألوان
+            </h2>
+            <div class="component-grid">
+                <div class="component-box">
+                    <div class="color-name">اللون الأساسي</div>
+                    <div class="color-swatch" style="background-color: var(--primary-color);"></div>
+                    <small class="text-muted" id="primary-hex">#004052</small>
+                </div>
+                <div class="component-box">
+                    <div class="color-name">خلفية البطاقة</div>
+                    <div class="color-swatch" style="background-color: var(--card-bg);"></div>
+                    <small class="text-muted">Card Background</small>
+                </div>
+                <div class="component-box">
+                    <div class="color-name">لون النص الأساسي</div>
+                    <div class="color-swatch" style="background-color: var(--text-primary);"></div>
+                    <small class="text-muted">Text Color</small>
+                </div>
+                <div class="component-box">
+                    <div class="color-name">لون النص الثانوي</div>
+                    <div class="color-swatch" style="background-color: var(--text-secondary);"></div>
+                    <small class="text-muted">Secondary Text</small>
+                </div>
+                <div class="component-box">
+                    <div class="color-name">لون الخطأ</div>
+                    <div class="color-swatch" style="background-color: #dc3545;"></div>
+                    <small class="text-muted">#dc3545</small>
+                </div>
+                <div class="component-box">
+                    <div class="color-name">لون النجاح</div>
+                    <div class="color-swatch" style="background-color: #28a745;"></div>
+                    <small class="text-muted">#28a745</small>
+                </div>
+            </div>
+        </div>
+
+        <!-- Buttons Section -->
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-mouse-pointer me-2"></i>
+                الأزرار
+            </h2>
+            <div class="d-flex flex-wrap gap-2 mb-4">
+                <button class="btn btn-primary">
+                    <i class="fas fa-check me-2"></i>زر أساسي
+                </button>
+                <button class="btn btn-secondary">
+                    <i class="fas fa-cog me-2"></i>زر ثانوي
+                </button>
+                <button class="btn btn-success">
+                    <i class="fas fa-check me-2"></i>نجاح
+                </button>
+                <button class="btn btn-danger">
+                    <i class="fas fa-trash me-2"></i>حذف
+                </button>
+                <button class="btn btn-warning text-dark">
+                    <i class="fas fa-exclamation me-2"></i>تحذير
+                </button>
+                <button class="btn btn-outline-primary">
+                    <i class="fas fa-star me-2"></i>أساسي مخطط
+                </button>
+            </div>
+        </div>
+
+        <!-- Cards Section -->
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-window-restore me-2"></i>
+                البطاقات
+            </h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">بطاقة المادة</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">هذه بطاقة تمثل مادة واحدة في النظام.</p>
+                            <div class="progress mb-3">
+                                <div class="progress-bar" style="width: 75%"></div>
+                            </div>
+                            <button class="btn btn-primary w-100">فتح المادة</button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="card mb-4">
+                        <div class="card-header">
+                            <h5 class="card-title mb-0">بطاقة الإشعار</h5>
+                        </div>
+                        <div class="card-body">
+                            <p class="card-text">إشعار جديد من مدرسك حول تحديث المنهج.</p>
+                            <small class="text-muted">منذ ساعة</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Forms Section -->
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-pen-square me-2"></i>
+                نماذج
+            </h2>
+            <div class="row">
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">البريد الإلكتروني</label>
+                        <input type="email" class="form-control" placeholder="example@hamdan.edu">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">كلمة المرور</label>
+                        <input type="password" class="form-control" placeholder="••••••••">
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">المادة</label>
+                        <select class="form-select">
+                            <option>اختر المادة</option>
+                            <option>الرياضيات</option>
+                            <option>العلوم</option>
+                            <option>اللغة العربية</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div class="mb-3">
+                        <label class="form-label">الملاحظات</label>
+                        <textarea class="form-control" rows="5" placeholder="أكتب ملاحظاتك هنا..."></textarea>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Alerts Section -->
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-bell me-2"></i>
+                الإشعارات
+            </h2>
+            <div class="alert alert-success d-flex align-items-center" role="alert">
+                <i class="fas fa-check-circle me-2"></i>
+                <div>تم حفظ البيانات بنجاح!</div>
+            </div>
+            <div class="alert alert-danger d-flex align-items-center" role="alert">
+                <i class="fas fa-exclamation-circle me-2"></i>
+                <div>حدث خطأ أثناء معالجة طلبك.</div>
+            </div>
+            <div class="alert alert-warning d-flex align-items-center" role="alert">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <div>انتبه! هذه المادة لم تكتمل بعد.</div>
+            </div>
+            <div class="alert alert-info d-flex align-items-center" role="alert">
+                <i class="fas fa-info-circle me-2"></i>
+                <div>معلومة: توجد مادة جديدة متاحة الآن.</div>
+            </div>
+        </div>
+
+        <!-- Badges Section -->
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-tag me-2"></i>
+                الشارات والعلامات
+            </h2>
+            <div class="d-flex flex-wrap gap-2">
+                <span class="badge bg-primary">الأساسي</span>
+                <span class="badge bg-success">مكتمل</span>
+                <span class="badge bg-danger">لم يبدأ</span>
+                <span class="badge bg-warning text-dark">قيد الإنجاز</span>
+                <span class="badge badge-light border">فارغ</span>
+                <span class="badge bg-info">معلومة</span>
+            </div>
+        </div>
+
+        <!-- Tables Section -->
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-table me-2"></i>
+                الجداول
+            </h2>
+            <div class="table-responsive">
+                <table class="table table-striped table-hover">
+                    <thead>
+                        <tr>
+                            <th>المادة</th>
+                            <th>الدرجة</th>
+                            <th>الحالة</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td>الرياضيات</td>
+                            <td>45/50</td>
+                            <td><span class="badge bg-success">مكتملة</span></td>
+                        </tr>
+                        <tr>
+                            <td>العلوم</td>
+                            <td>38/50</td>
+                            <td><span class="badge bg-warning text-dark">قيد الإنجاز</span></td>
+                        </tr>
+                        <tr>
+                            <td>اللغة العربية</td>
+                            <td>0/50</td>
+                            <td><span class="badge bg-danger">لم يبدأ</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+        <!-- Code Example Section -->
+        <div class="demo-section">
+            <h2 class="section-title">
+                <i class="fas fa-code me-2"></i>
+                كيفية الاستخدام
+            </h2>
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="card-title mb-0">إضافة مدير المظهر إلى صفحاتك</h5>
+                </div>
+                <div class="card-body">
+                    <p>أضف السطر التالي في رأس ملفات HTML:</p>
+                    <pre style="background-color: var(--bg-tertiary); padding: 10px; border-radius: 8px; overflow-x: auto;"><code>&lt;script src="js/theme-manager.js"&gt;&lt;/script&gt;</code></pre>
+                    <p class="mt-3">ثم أضف زر التبديل في navbar:</p>
+                    <pre style="background-color: var(--bg-tertiary); padding: 10px; border-radius: 8px; overflow-x: auto;"><code>&lt;button class="btn btn-light" data-theme-toggle&gt;
+    &lt;i class="fas fa-moon"&gt;&lt;/i&gt;
+&lt;/button&gt;</code></pre>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer -->
+        <div class="demo-section border-0">
+            <div class="text-center text-muted">
+                <p>
+                    <i class="fas fa-lightbulb me-2"></i>
+                    اضغط على زر تبديل الوضع في الأعلى لتجربة الوضع الفاتح والليلي
+                </p>
+                <small>تم إنشاؤه بـ ❤️ لمشروع حمدان</small>
+            </div>
+        </div>
+    </div>
+
+    <!-- Bottom Padding -->
+    <div style="height: 40px;"></div>
+
+    <!-- Scripts -->
+    <script src="js/theme-manager.js"></script>
+    <script>
+        // Update primary color in demo
+        function updateColorDemo() {
+            const primaryColor = getComputedStyle(document.documentElement).getPropertyValue('--primary-color').trim();
+            document.getElementById('primary-hex').textContent = primaryColor;
+        }
+
+        // Update on theme change
+        const toggleBtn = document.querySelector('[data-theme-toggle]');
+        if (toggleBtn) {
+            toggleBtn.addEventListener('click', () => {
+                setTimeout(updateColorDemo, 100);
+            });
+        }
+    </script>
+</body>
+</html>

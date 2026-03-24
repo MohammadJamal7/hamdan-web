@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="ar" dir="rtl" >
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -10,6 +10,9 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="css/style.css">
+    <!-- Theme Manager for Dark Mode -->
+    <script src="js/theme-manager.js"></script>
+    <script src="js/components/top-nav.js"></script>
     <style>
         @font-face {
             font-family: 'Hayah';
@@ -167,6 +170,32 @@
             margin-bottom: 0.75rem;
         }
 
+        /* Dark Mode Overrides */
+        [data-theme="dark"] .course-card {
+            background: var(--card-bg);
+            border-color: var(--border-color);
+        }
+
+        [data-theme="dark"] .course-title {
+            color: var(--text-primary) !important;
+        }
+
+        [data-theme="dark"] .course-description {
+            color: var(--text-secondary) !important;
+        }
+
+        [data-theme="dark"] .category-courses {
+            border-right-color: #00a8cc !important;
+        }
+
+        [data-theme="dark"] .course-thumbnail {
+            background: var(--bg-tertiary);
+        }
+
+        [data-theme="dark"] .course-progress {
+            background: var(--border-color);
+        }
+
         .course-progress {
             height: 4px;
             background: #e5e7eb;
@@ -212,24 +241,7 @@
 </head>
 <body>
     <!-- Top Navigation Bar -->
-    <nav class="navbar navbar-expand-lg navbar-dark custom-gradient-navbar">
-        <div class="container">
-            <div class="d-flex justify-content-between w-100 align-items-center">
-                <!-- Notifications Icon -->
-                <a href="notifications.html" class="text-white position-relative">
-                    <i class="fas fa-bell fa-lg"></i>
-                </a>
-
-                <!-- Page Title -->
-                <h5 class="text-white mb-0">موادك</h5>
-
-                <!-- Phone Icon -->
-                <a href="http://t.me/hamdan2S" class="text-white">
-                    <i class="fas fa-phone fa-lg"></i>
-                </a>
-            </div>
-        </div>
-    </nav>
+    <top-nav></top-nav>
 
     <!-- Main Content -->
     <div class="container mt-4 mb-5 pb-5">
@@ -252,7 +264,7 @@
     </div>
 
     <!-- Bottom Navigation -->
-    <nav class="navbar fixed-bottom navbar-light bg-white border-top">
+    <nav class="navbar fixed-bottom border-top">
         <div class="container">
             <div class="d-flex justify-content-around w-100">
                 <a href="dashboard.html" class="nav-link text-center">
