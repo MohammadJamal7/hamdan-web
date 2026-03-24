@@ -1,16 +1,17 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl" >
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1976d2">
     <title>حمدان - تسجيل جديد</title>
-    <!-- Bootstrap RTL CSS -->
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.rtl.min.css">
     <!-- Font Awesome for icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <!-- Theme Manager for Dark Mode -->
     <script src="js/theme-manager.js"></script>
+    
     <style>
+        /* ===== CUSTOM FONTS ===== */
         @font-face {
             font-family: 'Hayah';
             src: url('fonts/66Hayah.otf') format('opentype');
@@ -18,389 +19,836 @@
             font-style: normal;
             font-display: swap;
         }
+
+        /* ===== ROOT CSS VARIABLES - LIGHT MODE ===== */
+        :root {
+            --primary-color: #004052;
+            --primary-hover: #003040;
+            --bg-page: #f5f7fa;
+            --bg-card: #ffffff;
+            --bg-input: #ffffff;
+            --bg-input-focus: #f5f7fa;
+            --text-primary: #333333;
+            --text-secondary: #666666;
+            --text-muted: #999999;
+            --border-color: #dddddd;
+            --border-light: #eeeeee;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+            --danger-color: #dc3545;
+            --success-color: #28a745;
+        }
+
+        /* ===== DARK MODE CSS VARIABLES ===== */
+        html[data-theme="dark"] {
+            --primary-color: #00a8cc;
+            --primary-hover: #0098b8;
+            --bg-page: #0f1419;
+            --bg-card: #1a2332;
+            --bg-input: #262d3f;
+            --bg-input-focus: #2d3550;
+            --text-primary: #e8eaed;
+            --text-secondary: #a8aeb5;
+            --text-muted: #7a7f8a;
+            --border-color: #2d3142;
+            --border-light: #383f52;
+            --shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+            --danger-color: #ff6b6b;
+            --success-color: #51cf66;
+        }
+
+        /* ===== UNIVERSAL STYLES ===== */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
         body {
             font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 1.25rem;
-            background-color: #f5f7fa;
+            font-size: 16px;
+            line-height: 1.5;
+            background-color: var(--bg-page);
+            color: var(--text-primary);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            direction: rtl;
-        }
-        .register-container {
-            background-color: white;
-            border-radius: 10px;
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-            padding: 30px;
-            max-width: 400px;
-            width: 100%;
-        }
-        .logo-container {
-            text-align: center;
-            margin-bottom: 20px;
-        }
-        .app-name {
-            color: #004052;
-            font-weight: 600;
-            margin-bottom: 20px;
-        }
-        .register-header {
-            color: #004052;
-            font-weight: 500;
-            margin-bottom: 20px;
-        }
-        
-        /* Dark Mode Register Overrides */
-        [data-theme="dark"] body {
-            background-color: var(--bg-secondary);
+            transition: background-color 0.3s ease, color 0.3s ease;
         }
 
-        [data-theme="dark"] .register-container {
-            background-color: var(--card-bg);
-            box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+        /* Smooth transitions for all elements */
+        * {
+            transition: background-color 0.3s ease, color 0.3s ease, border-color 0.3s ease, box-shadow 0.3s ease;
         }
 
-        [data-theme="dark"] .app-name,
-        [data-theme="dark"] .register-header {
-            color: var(--primary-color) !important;
+        /* Disable transitions during theme switch */
+        html.theme-switching * {
+            transition: none !important;
         }
 
-        [data-theme="dark"] .toast {
-            background-color: var(--card-bg);
-            color: var(--text-primary);
-        }
-
-        [data-theme="dark"] .toast-body {
-            color: var(--text-primary) !important;
-        }
-        .form-control {
-            border-radius: 8px;
-            font-family: 'Hayah', 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            font-size: 1.25rem;
-            direction: rtl;
-        }
-        .btn-primary {
-            background: linear-gradient(90deg, #213f63 0%, #051a23 100%);
-            border: none;
-            border-radius: 8px;
-            padding: 10px;
-            color: #fff;
-        }
-        .btn-primary:hover {
-            background: linear-gradient(90deg, #213f63 0%, #051a23 100%);
-            color: #fff;
-        }
-        /* Toast Styles */
-        .toast-container {
-            position: fixed;
-            top: 20px;
-            right: 20px;
-            z-index: 1050;
-        }
-        .toast {
-            background-color: white;
-            border-radius: 8px;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-            min-width: 300px;
-        }
-        .toast.success {
-            border-right: 4px solid #28a745;
-        }
-        .toast.error {
-            border-right: 4px solid #dc3545;
-        }
-        .toast-header {
-            border-bottom: none;
-            padding: 12px 16px;
-        }
-        .toast-body {
-            padding: 12px 16px;
-            color: #333;
-        }
-        .toast-icon {
-            margin-left: 8px;
-        }
-        
-        /* Theme toggle positioning */
-        .theme-toggle-fixed {
+        /* ===== THEME TOGGLE BUTTON ===== */
+        .theme-toggle-btn {
             position: fixed;
             top: 20px;
             left: 20px;
             z-index: 1000;
+            width: 50px;
+            height: 50px;
+            background-color: var(--bg-card);
+            color: var(--text-primary);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 0;
+            font-size: 1.2rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .theme-toggle-btn:hover {
+            background-color: var(--bg-input);
+            border-color: var(--primary-color);
+            color: var(--primary-color);
+            transform: translateY(-3px);
+            box-shadow: var(--shadow);
+        }
+
+        .theme-toggle-btn:active {
+            transform: translateY(-1px);
+        }
+
+        /* ===== REGISTER CONTAINER ===== */
+        .register-wrapper {
+            width: 100%;
+            padding: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 100vh;
+        }
+
+        .register-card {
+            background-color: var(--bg-card);
+            border-radius: 15px;
+            padding: 40px 35px;
+            max-width: 480px;
+            width: 100%;
+            box-shadow: var(--shadow);
+            border: 1px solid var(--border-light);
+        }
+
+        /* ===== LOGO SECTION ===== */
+        .logo-section {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .logo-section img {
+            max-width: 180px;
+            width: 100%;
+            height: auto;
+            margin-bottom: 15px;
+            display: block;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .app-title {
+            font-size: 28px;
+            font-weight: 700;
+            color: var(--primary-color);
+            margin-bottom: 5px;
+            letter-spacing: 1px;
+        }
+
+        .register-subtitle {
+            font-size: 20px;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 25px;
+            margin-top: 0;
+        }
+
+        /* ===== FORM STYLES ===== */
+        .register-form {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .form-label {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-align: center;
+            margin-bottom: 2px;
+        }
+
+        /* ===== FORM ROW FOR TWO COLUMNS ===== */
+        .form-row {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 12px;
+        }
+
+        .form-row .form-group {
+            gap: 5px;
+        }
+
+        /* ===== INPUT FIELDS ===== */
+        .input-field {
+            width: 100%;
+            padding: 12px 14px;
+            font-size: 15px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            background-color: var(--bg-input);
+            color: var(--text-primary);
+            font-family: inherit;
+            text-align: right;
+            direction: rtl;
+            transition: all 0.3s ease;
+        }
+
+        .input-field::placeholder {
+            color: var(--text-muted);
+        }
+
+        .input-field:focus {
+            outline: none;
+            background-color: var(--bg-input-focus);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 3px rgba(0, 168, 204, 0.1);
+        }
+
+        .input-field:disabled {
+            background-color: var(--border-light);
+            color: var(--text-muted);
+            cursor: not-allowed;
+        }
+
+        /* Password Input Group */
+        .password-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .password-group .input-field {
+            width: 100%;
+            padding-left: 40px;
+            padding-right: 14px;
+        }
+
+        .password-toggle-btn {
+            position: absolute;
+            left: 10px;
+            background: none;
+            border: none;
+            cursor: pointer;
+            color: var(--text-secondary);
+            font-size: 16px;
+            padding: 5px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s ease;
+        }
+
+        .password-toggle-btn:hover {
+            color: var(--primary-color);
+        }
+
+        /* ===== CHECKBOX STYLES ===== */
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 3px;
+            flex-direction: row-reverse;
+            width: 100%;
+            font-size: 13px;
+        }
+
+        .checkbox-input {
+            width: 18px;
+            height: 18px;
+            cursor: pointer;
+            accent-color: var(--primary-color);
+            flex-shrink: 0;
+        }
+
+        .checkbox-label {
+            font-size: 13px;
+            color: var(--text-primary);
+            cursor: pointer;
+            user-select: none;
+            margin: 0;
+            text-align: right;
+        }
+
+        /* ===== ERROR ALERT ===== */
+        .alert-error {
+            padding: 12px 14px;
+            background-color: rgba(220, 53, 69, 0.12);
+            border: 2px solid var(--danger-color);
+            border-radius: 8px;
+            color: var(--danger-color);
+            font-size: 13px;
+            text-align: center;
+            display: none;
+            margin-top: 5px;
+        }
+
+        .alert-error.show {
+            display: block;
+        }
+
+        /* ===== REGISTER BUTTON ===== */
+        .btn-register {
+            width: 100%;
+            padding: 14px 20px;
+            font-size: 17px;
+            font-weight: 600;
+            background: linear-gradient(135deg, #213f63 0%, #051a23 100%);
+            color: white;
+            border: none;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            margin-top: 15px;
+        }
+
+        .btn-register:hover:not(:disabled) {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 0, 0, 0.2);
+            background: linear-gradient(135deg, #2d5a7b 0%, #032030 100%);
+        }
+
+        .btn-register:active:not(:disabled) {
+            transform: translateY(0);
+        }
+
+        .btn-register:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+        }
+
+        /* Loading spinner */
+        .spinner-small {
+            width: 16px;
+            height: 16px;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-top-color: white;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* ===== LINKS & TEXT ===== */
+        .divider-text {
+            text-align: center;
+            color: var(--text-muted);
+            font-size: 13px;
+            margin: 12px 0;
+        }
+
+        .divider-text a {
+            color: var(--primary-color);
+            text-decoration: none;
+            font-weight: 600;
+            transition: all 0.2s ease;
+        }
+
+        .divider-text a:hover {
+            text-decoration: underline;
+            color: var(--primary-hover);
+        }
+
+        /* ===== TOAST NOTIFICATIONS ===== */
+        .toast-container {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 9999;
+            pointer-events: none;
+        }
+
+        .toast-notification {
+            background-color: var(--bg-card);
+            border: 2px solid var(--border-color);
+            border-radius: 10px;
+            padding: 14px 16px;
+            margin-bottom: 10px;
+            min-width: 300px;
+            box-shadow: var(--shadow);
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            animation: slideIn 0.3s ease;
+            pointer-events: auto;
+        }
+
+        .toast-notification.success {
+            border-left: 4px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .toast-notification.error {
+            border-left: 4px solid var(--danger-color);
+            color: var(--danger-color);
+        }
+
+        .toast-icon {
+            font-size: 1.3rem;
+            flex-shrink: 0;
+        }
+
+        .toast-message {
+            flex: 1;
+            font-size: 14px;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        /* ===== RESPONSIVE ===== */
+        @media (max-width: 600px) {
+            .register-card {
+                padding: 30px 20px;
+            }
+
+            .app-title {
+                font-size: 24px;
+            }
+
+            .register-subtitle {
+                font-size: 17px;
+                margin-bottom: 20px;
+            }
+
+            .logo-section img {
+                max-width: 140px;
+            }
+
+            .form-row {
+                grid-template-columns: 1fr;
+                gap: 12px;
+            }
+
+            .btn-register {
+                font-size: 15px;
+                padding: 12px 16px;
+            }
+
+            .toast-notification {
+                min-width: auto;
+                width: calc(100vw - 40px);
+                right: 20px;
+                left: 20px;
+            }
+
+            .theme-toggle-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+        }
+
+        /* ===== ACCESSIBILITY ===== */
+        .btn-register:focus,
+        .theme-toggle-btn:focus {
+            outline: 2px solid var(--primary-color);
+            outline-offset: 2px;
+        }
+
+        button:not(:disabled) {
+            cursor: pointer;
+        }
+
+        a {
+            color: var(--primary-color);
         }
     </style>
 </head>
-<body>    <!-- Theme Toggle Button -->
-    <button class=\"btn btn-sm btn-outline-dark theme-toggle-fixed\" data-theme-toggle title=\"تبديل الوضع\">
-        <i class=\"fas fa-moon\"></i>
+<body>
+    <!-- Theme Toggle Button -->
+    <button class="theme-toggle-btn" data-theme-toggle title="تبديل الوضع">
+        <i class="fas fa-moon"></i>
     </button>
-        <!-- Toast Container -->
+
+    <!-- Toast Notifications Container -->
     <div class="toast-container"></div>
 
-    <div class="container">
-        <div class="row justify-content-center">
-            <div class="col-md-6 col-lg-5">
-                <div class="register-container text-center">
-                    <!-- Logo -->
-                    <div class="logo-container mb-0">
-                        <img src="images/logo.jpeg" alt="حمدان" class="img-fluid" style="max-width: 290px;">
+    <!-- Main Register Wrapper -->
+    <div class="register-wrapper">
+        <div class="register-card">
+            <!-- Logo Section -->
+            <div class="logo-section">
+                <img src="images/logo.jpeg" alt="شعار حمدان" id="logo-img">
+            </div>
+
+            <!-- Register Title -->
+            <h2 class="register-subtitle">تسجيل جديد</h2>
+
+            <!-- Register Form -->
+            <form id="registerForm" class="register-form">
+                <!-- First Name and Last Name Row -->
+                <div class="form-row">
+                    <div class="form-group">
+                        <label class="form-label">اسم العائلة</label>
+                        <input 
+                            type="text" 
+                            class="input-field" 
+                            id="lastName" 
+                            name="lastName"
+                            placeholder="اسم العائلة"
+                            autocomplete="family-name"
+                            required
+                        />
                     </div>
-
-         
-                    <!-- Register Header -->
-                    <h4 class="register-header mb-4">تسجيل جديد</h4>
-
-                    <!-- Register Form -->
-                    <form id="registerForm" class="text-end" style="direction: rtl;">
-                        <!-- Full Name Fields -->
-                        <div class="row">
-                            <div class="col-6">
-                                <div class="form-group mb-3">
-                                    <label for="firstName" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">اسمك الأول</label>
-                                    <input type="text" class="form-control" id="firstName" placeholder="اكتب اسمك الأول" style="direction:rtl;">
-                                </div>
-                            </div>
-                            <div class="col-6">
-                                <div class="form-group mb-3">
-                                    <label for="lastName" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">اسم العائلة</label>
-                                    <input type="text" class="form-control" id="lastName" placeholder="اكتب اسم عايلتك" style="direction:rtl;">
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Username Field -->
-                        <div class="form-group mb-3">
-                            <label for="username" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">اسم المستخدم</label>
-                            <input type="text" class="form-control" id="username" placeholder="اكتب يوزرك" style="direction:rtl;">
-                        </div>
-
-                        <!-- Email Field -->
-                        <div class="form-group mb-3">
-                            <label for="email" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">الإيميل</label>
-                            <input
-                                type="email"
-                                id="email"
-                                name="email"
-                                class="form-control"
-                                required
-                                autocomplete="email"
-                                placeholder="اكتب إيميلك"
-                                style="direction:rtl;"
-                            />
-                        </div>
-
-                        <!-- Phone Field -->
-                        <div class="form-group mb-3">
-                            <label for="phone" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">رقم الجوال</label>
-                            <input type="tel" class="form-control" id="phone" placeholder="اكتب رقم جوالك" style="direction:rtl;">
-                        </div>
-
-                        <!-- Password Field -->
-                        <div class="form-group mb-3">
-                            <label for="password" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;">كلمة المرور</label>
-                            <div class="input-group">
-                                <input
-                                    type="password"
-                                    id="password"
-                                    name="password"
-                                    class="form-control"
-                                    required
-                                    autocomplete="new-password"
-                                    placeholder="حط كلمة مرورك"
-                                    style="direction:rtl;"
-                                />
-                                <button class="btn btn-outline-secondary toggle-password" type="button">
-                                    <i class="fa fa-eye-slash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Confirm Password Field -->
-                        <div class="form-group mb-3">
-                            <label for="confirmPassword" class="form-label small text-muted w-100 text-center d-block" style="direction:rtl; text-align:center;"> اكتب الكلمة مرة ثانية </label>
-                            <div class="input-group">
-                                <input
-                                    type="password"
-                                    id="confirmPassword"
-                                    name="confirmPassword"
-                                    class="form-control"
-                                    required
-                                    autocomplete="new-password"
-                                    placeholder="أعد كتابة كلمة المرور"
-                                    style="direction:rtl;"
-                                />
-                                <button class="btn btn-outline-secondary toggle-password" type="button">
-                                    <i class="fa fa-eye-slash"></i>
-                                </button>
-                            </div>
-                        </div>
-
-                        <!-- Error Message -->
-                        <div class="alert alert-danger d-none" id="registerError"></div>
-
-                        <!-- Register Button -->
-                        <button type="submit" class="btn btn-primary w-100 mb-3" id="registerButton">سجّلني</button>
-
-                        <!-- Login Link -->
-                        <div class="text-center mt-3">
-                            <p>عندك حساب؟ <a href="login.html" class="text-primary">سجّل دخولك</a></p>
-                        </div>
-                    </form>
+                    <div class="form-group">
+                        <label class="form-label">الاسم الأول</label>
+                        <input 
+                            type="text" 
+                            class="input-field" 
+                            id="firstName" 
+                            name="firstName"
+                            placeholder="الاسم الأول"
+                            autocomplete="given-name"
+                            required
+                        />
+                    </div>
                 </div>
+
+                <!-- Email Field -->
+                <div class="form-group">
+                    <label class="form-label">البريد الإلكتروني</label>
+                    <input 
+                        type="email" 
+                        class="input-field" 
+                        id="email" 
+                        name="email"
+                        placeholder="البريد الإلكتروني"
+                        autocomplete="email"
+                        required
+                    />
+                </div>
+
+                <!-- Username Field -->
+                <div class="form-group">
+                    <label class="form-label">اسم المستخدم</label>
+                    <input 
+                        type="text" 
+                        class="input-field" 
+                        id="username" 
+                        name="username"
+                        placeholder="اسم المستخدم"
+                        autocomplete="username"
+                        required
+                    />
+                </div>
+
+                <!-- Password Field -->
+                <div class="form-group">
+                    <label class="form-label">كلمة المرور</label>
+                    <div class="password-group">
+                        <input 
+                            type="password" 
+                            class="input-field" 
+                            id="password" 
+                            name="password"
+                            placeholder="كلمة المرور"
+                            autocomplete="new-password"
+                            required
+                        />
+                        <button type="button" class="password-toggle-btn" id="togglePassword">
+                            <i class="fas fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Confirm Password Field -->
+                <div class="form-group">
+                    <label class="form-label">تأكيد كلمة المرور</label>
+                    <div class="password-group">
+                        <input 
+                            type="password" 
+                            class="input-field" 
+                            id="confirmPassword" 
+                            name="confirmPassword"
+                            placeholder="تأكيد كلمة المرور"
+                            autocomplete="new-password"
+                            required
+                        />
+                        <button type="button" class="password-toggle-btn" id="toggleConfirmPassword">
+                            <i class="fas fa-eye-slash"></i>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Terms Checkbox 1 -->
+                <div class="checkbox-group">
+                    <label class="checkbox-label" for="agreeTerms">
+                        أوافق على شروط وأحكام الخدمة
+                    </label>
+                    <input 
+                        type="checkbox" 
+                        class="checkbox-input" 
+                        id="agreeTerms"
+                        name="agreeTerms"
+                        required
+                    />
+                </div>
+
+                <!-- Terms Checkbox 2 -->
+                <div class="checkbox-group">
+                    <label class="checkbox-label" for="agreePrivacy">
+                        أوافق على سياسة الخصوصية
+                    </label>
+                    <input 
+                        type="checkbox" 
+                        class="checkbox-input" 
+                        id="agreePrivacy"
+                        name="agreePrivacy"
+                        required
+                    />
+                </div>
+
+                <!-- Error Alert -->
+                <div class="alert-error" id="registerError"></div>
+
+                <!-- Register Button -->
+                <button type="submit" class="btn-register" id="registerButton">
+                    تسجيل
+                </button>
+            </form>
+
+            <!-- Divider with Login Link -->
+            <div class="divider-text">
+                هل لديك حساب بالفعل؟ <a href="login.html">سجل الدخول</a>
             </div>
         </div>
     </div>
 
-    <!-- Bootstrap JS Bundle with Popper -->
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
     <!-- Device ID Generator -->
     <script src="js/deviceId.js"></script>
 
     <script>
         // Toast notification function
         function showToast(message, type = 'success') {
-            const toastContainer = document.querySelector('.toast-container');
+            const container = document.querySelector('.toast-container');
             const toast = document.createElement('div');
-            toast.className = `toast ${type} show`;
-            toast.setAttribute('role', 'alert');
-            toast.setAttribute('aria-live', 'assertive');
-            toast.setAttribute('aria-atomic', 'true');
+            toast.className = `toast-notification ${type}`;
             
-            const icon = type === 'success' ? 'check-circle' : 'exclamation-circle';
-            const iconColor = type === 'success' ? '#28a745' : '#dc3545';
+            const icon = type === 'success' ? 'check-circle' : 'times-circle';
+            const iconClass = type === 'success' ? 'fas' : 'fas';
             
             toast.innerHTML = `
-                <div class="toast-header">
-                    <i class="fas fa-${icon} toast-icon" style="color: ${iconColor}"></i>
-                    <strong class="me-auto">${type === 'success' ? 'نجاح' : 'خطأ'}</strong>
-                    <button type="button" class="btn-close" data-bs-dismiss="toast" aria-label="Close"></button>
-                </div>
-                <div class="toast-body">
-                    ${message}
-                </div>
+                <i class="${iconClass} fa-${icon} toast-icon"></i>
+                <span class="toast-message">${message}</span>
             `;
             
-            toastContainer.appendChild(toast);
+            container.appendChild(toast);
             
-            // Auto remove after 3 seconds
+            // Auto remove after 4 seconds
             setTimeout(() => {
-                toast.classList.remove('show');
+                toast.style.animation = 'slideIn 0.3s ease reverse';
                 setTimeout(() => toast.remove(), 300);
-            }, 3000);
+            }, 4000);
         }
+
+        // Logo switching for dark/light mode
+        function updateLogoForTheme() {
+            const logoImg = document.getElementById('logo-img');
+            if (!logoImg) return;
+            const isDark = document.documentElement.getAttribute('data-theme') === 'dark';
+            logoImg.src = isDark ? 'images/logo-dark.jpeg' : 'images/logo.jpeg';
+        }
+
+        // Listen for theme changes
+        const observer = new MutationObserver(updateLogoForTheme);
+        observer.observe(document.documentElement, { attributes: true, attributeFilter: ['data-theme'] });
+        // Initial logo set
+        updateLogoForTheme();
 
         // Check if user is already logged in
         document.addEventListener('DOMContentLoaded', function() {
             const token = localStorage.getItem('token');
             if (token) {
-                // Redirect to dashboard if already logged in
                 window.location.href = 'dashboard.html';
+                return;
             }
 
-            // Toggle password visibility
-            const togglePasswordButtons = document.querySelectorAll('.toggle-password');
+            // Password visibility toggle
+            const toggleBtn = document.getElementById('togglePassword');
+            const passwordInput = document.getElementById('password');
 
-            togglePasswordButtons.forEach(button => {
-                button.addEventListener('click', function() {
-                    const passwordInput = this.closest('.input-group').querySelector('input');
-                    const type = passwordInput.getAttribute('type') === 'password' ? 'text' : 'password';
-                    passwordInput.setAttribute('type', type);
-                    this.querySelector('i').classList.toggle('fa-eye');
-                    this.querySelector('i').classList.toggle('fa-eye-slash');
+            if (toggleBtn && passwordInput) {
+                toggleBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const type = passwordInput.type === 'password' ? 'text' : 'password';
+                    passwordInput.type = type;
+                    
+                    const icon = toggleBtn.querySelector('i');
+                    if (type === 'password') {
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
                 });
-            });
+            }
+
+            // Confirm Password visibility toggle
+            const toggleConfirmBtn = document.getElementById('toggleConfirmPassword');
+            const confirmPasswordInput = document.getElementById('confirmPassword');
+
+            if (toggleConfirmBtn && confirmPasswordInput) {
+                toggleConfirmBtn.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const type = confirmPasswordInput.type === 'password' ? 'text' : 'password';
+                    confirmPasswordInput.type = type;
+                    
+                    const icon = toggleConfirmBtn.querySelector('i');
+                    if (type === 'password') {
+                        icon.classList.remove('fa-eye');
+                        icon.classList.add('fa-eye-slash');
+                    } else {
+                        icon.classList.remove('fa-eye-slash');
+                        icon.classList.add('fa-eye');
+                    }
+                });
+            }
 
             // Register form submission
             const registerForm = document.getElementById('registerForm');
             const registerButton = document.getElementById('registerButton');
             const registerError = document.getElementById('registerError');
 
-            registerForm.addEventListener('submit', async function(e) {
+            registerForm.addEventListener('submit', async (e) => {
                 e.preventDefault();
 
-                const firstName = document.getElementById('firstName').value;
-                const lastName = document.getElementById('lastName').value;
-                const username = document.getElementById('username').value;
-                const email = document.getElementById('email').value;
-                const phone = document.getElementById('phone').value;
+                const firstName = document.getElementById('firstName').value.trim();
+                const lastName = document.getElementById('lastName').value.trim();
+                const email = document.getElementById('email').value.trim();
+                const username = document.getElementById('username').value.trim();
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
+                const agreeTerms = document.getElementById('agreeTerms').checked;
+                const agreePrivacy = document.getElementById('agreePrivacy').checked;
 
-                // Validate inputs
-                if (!firstName || !lastName || !username || !email || !phone || !password || !confirmPassword) {
+                // Validation
+                if (!firstName || !lastName || !email || !username || !password || !confirmPassword) {
+                    showToast('يرجى ملء جميع الحقول المطلوبة', 'error');
                     registerError.textContent = 'يرجى ملء جميع الحقول المطلوبة';
-                    registerError.classList.remove('d-none');
+                    registerError.classList.add('show');
                     return;
                 }
 
                 if (password !== confirmPassword) {
+                    showToast('كلمات المرور غير متطابقة', 'error');
                     registerError.textContent = 'كلمات المرور غير متطابقة';
-                    registerError.classList.remove('d-none');
+                    registerError.classList.add('show');
+                    return;
+                }
+
+                if (password.length < 6) {
+                    showToast('كلمة المرور يجب أن تكون 6 أحرف على الأقل', 'error');
+                    registerError.textContent = 'كلمة المرور يجب أن تكون 6 أحرف على الأقل';
+                    registerError.classList.add('show');
+                    return;
+                }
+
+                if (!agreeTerms || !agreePrivacy) {
+                    showToast('يجب الموافقة على الشروط والسياسات', 'error');
+                    registerError.textContent = 'يجب الموافقة على الشروط والسياسات';
+                    registerError.classList.add('show');
                     return;
                 }
 
                 try {
                     // Show loading state
-                    registerButton.innerHTML = '<span class="spinner-border spinner-border-sm" role="status" aria-hidden="true"></span> جاري التحميل...';
+                    const originalText = registerButton.innerHTML;
+                    registerButton.innerHTML = '<div class="spinner-small"></div> جاري التسجيل...';
                     registerButton.disabled = true;
-                    registerError.classList.add('d-none');
+                    registerError.classList.remove('show');
 
                     // Get device ID
-                    const deviceId = window.getDeviceId();
+                    const deviceId = window.getDeviceId?.() || 'unknown';
 
-                    // Make register request
-                    const response = await fetch('https://api.hamdan.help/api/register', {
+                    // Make registration request
+                    const response = await fetch('https://api.hamdan.help/api/students/register', {
                         method: 'POST',
                         headers: {
                             'Content-Type': 'application/json'
                         },
                         body: JSON.stringify({
-                            name: `${firstName} ${lastName}`,
-                            username,
+                            firstName,
+                            lastName,
                             email,
-                            phone,
+                            username,
                             password,
                             deviceId
                         })
                     });
 
-                    console.log('Register response status:', response.status);
                     const data = await response.json();
-                    console.log('Register response data:', data);
 
-                    if (response.ok && data.success && data.data && data.data.token) {
-                        // Save token and user data
-                        localStorage.setItem('token', data.data.token);
-                        localStorage.setItem('user', JSON.stringify(data.data.student));
-
-                        // Show success toast
-                        showToast('تم التسجيل بنجاح');
-
-                        // Redirect to dashboard after a short delay
+                    if (response.ok && data.success) {
+                        showToast('تم التسجيل بنجاح! جاري إعادة التوجيه...', 'success');
+                        
+                        // Redirect to login after a short delay
                         setTimeout(() => {
-                            window.location.href = 'dashboard.html';
-                        }, 1000);
+                            window.location.href = 'login.html';
+                        }, 1500);
                     } else {
-                        // Show error message
-                        registerError.textContent = data.message || 'فشل التسجيل';
-                        registerError.classList.remove('d-none');
-
-                        // Reset button
-                        registerButton.innerHTML = 'التسجيل';
+                        const errorMessage = data.message || 'حدث خطأ أثناء التسجيل';
+                        showToast(errorMessage, 'error');
+                        registerError.textContent = errorMessage;
+                        registerError.classList.add('show');
+                        
+                        registerButton.innerHTML = originalText;
                         registerButton.disabled = false;
                     }
                 } catch (error) {
                     console.error('Registration error:', error);
-
-                    // Show error message
-                    registerError.textContent = 'حدث خطأ أثناء الاتصال بالخادم';
-                    registerError.classList.remove('d-none');
-
-                    // Reset button
-                    registerButton.innerHTML = 'التسجيل';
+                    const errorMessage = 'حدث خطأ أثناء الاتصال بالخادم. حاول مرة أخرى.';
+                    showToast(errorMessage, 'error');
+                    registerError.textContent = errorMessage;
+                    registerError.classList.add('show');
+                    
+                    registerButton.innerHTML = originalText;
                     registerButton.disabled = false;
                 }
             });
