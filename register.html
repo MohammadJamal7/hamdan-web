@@ -638,8 +638,6 @@
                     </div>
                 </div>
 
-               
-
                 <!-- Error Alert -->
                 <div class="alert-error" id="registerError"></div>
 
@@ -763,8 +761,6 @@
                 const phone = document.getElementById('phone').value.trim();
                 const password = document.getElementById('password').value;
                 const confirmPassword = document.getElementById('confirmPassword').value;
-                const agreeTerms = document.getElementById('agreeTerms').checked;
-                const agreePrivacy = document.getElementById('agreePrivacy').checked;
 
                 // Validation
                 if (!firstName || !lastName || !email || !username || !password || !confirmPassword) {
@@ -777,13 +773,6 @@
                 if (password !== confirmPassword) {
                     showToast('كلمات المرور غير متطابقة', 'error');
                     registerError.textContent = 'كلمات المرور غير متطابقة';
-                    registerError.classList.add('show');
-                    return;
-                }
-
-                if (!agreeTerms || !agreePrivacy) {
-                    showToast('يجب الموافقة على الشروط والسياسات', 'error');
-                    registerError.textContent = 'يجب الموافقة على الشروط والسياسات';
                     registerError.classList.add('show');
                     return;
                 }
